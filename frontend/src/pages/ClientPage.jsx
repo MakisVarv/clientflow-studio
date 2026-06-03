@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { clients } from '../data/clients';
 import ClientForm from './ClientForm';
 import ClientFilters from '../components/ClientFilters';
@@ -7,9 +7,23 @@ import useClientFilters from '../hooks/useClientFilters';
 import ClientDetails from '../components/ClientDetails';
 
 export default function ClientPage() {
-  const [clientList, setClientList] = useState(clients);
+  const [clientList, setClientList] = useState(() => {
+    const savedClients = localStorage.getItem('clientflow_clients');
+
+    if (savedClients) {
+      return JSON.parse(savedClients);
+    }
+
+    return clients;
+  });
   const [selectedClientId, setSelectedClientId] = useState(null);
   const [editingClientId, setEditingClientId] = useState(null);
+  useEffect(() => {
+    localStorage.setItem(
+      'clientflow_clients',
+      JSON.stringify(clientList),
+    );
+  }, [clientList]);
   function handleEdit(id) {
     setEditingClientId(id);
   }
@@ -29,6 +43,11 @@ export default function ClientPage() {
     if (editingClientId === id) {
       setEditingClientId(null);
     }
+  }
+  function handleResetDemo() {
+    setClientList(clients);
+    setSelectedClientId(null);
+    setEditingClientId(null);
   }
   function handleCreateClient(client) {
     setClientList((currentClients) => [...currentClients, client]);
@@ -64,12 +83,17 @@ export default function ClientPage() {
         onClear={handleClear}
       />
       <div className="container">
-        <ClientList
-          clients={filteredClients}
-          totalClients={clientList}
-          selectedClientId={selectedClientId}
-          onSelectClient={setSelectedClientId}
-        />
+        <div>
+          <button onClick={handleResetDemo}>
+            Reset Demo clients
+          </button>
+          <ClientList
+            clients={filteredClients}
+            totalClients={clientList}
+            selectedClientId={selectedClientId}
+            onSelectClient={setSelectedClientId}
+          />
+        </div>
         <div>
           <ClientDetails
             client={selectedClient}
