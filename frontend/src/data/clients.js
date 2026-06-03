@@ -5,6 +5,7 @@ export const clients = [
     company: 'Aegean Digital',
     email: 'maria@aegeandigital.gr',
     status: 'active',
+    notes: [],
   },
   {
     id: 2,
@@ -12,6 +13,7 @@ export const clients = [
     company: 'Helios Consulting',
     email: 'nikos@heliosconsulting.gr',
     status: 'lead',
+    notes: [],
   },
   {
     id: 3,
@@ -19,6 +21,7 @@ export const clients = [
     company: 'BlueWave Travel',
     email: 'eleni@bluewavetravel.gr',
     status: 'inactive',
+    notes: [],
   },
   {
     id: 4,
@@ -26,6 +29,7 @@ export const clients = [
     company: 'UrbanTech Solutions',
     email: 'andreas@urbantech.gr',
     status: 'active',
+    notes: [],
   },
   {
     id: 5,
@@ -33,5 +37,6 @@ export const clients = [
     company: 'NorthStar Logistics',
     email: 'sofia@northstarlogistics.gr',
     status: 'lead',
+    notes: [],
   },
 ];

@@ -1,8 +1,12 @@
+import { useState } from 'react';
+
 export default function ClientDetails({
   client,
   onDeleteClient,
   onEditClient,
+  onAddNote,
 }) {
+  const [noteText, setNoteText] = useState('');
   if (!client) {
     return (
       <section>
@@ -11,7 +15,16 @@ export default function ClientDetails({
       </section>
     );
   }
+  function handleSubmitNote(e) {
+    e.preventDefault();
 
+    if (noteText.trim() === '') {
+      return;
+    }
+
+    onAddNote(client.id, noteText.trim());
+    setNoteText('');
+  }
   return (
     <section>
       <h2>Client Details</h2>
@@ -24,6 +37,23 @@ export default function ClientDetails({
       <button onClick={() => onDeleteClient(client.id)}>
         Delete
       </button>
+      <form onSubmit={handleSubmitNote}>
+        <input
+          value={noteText}
+          onChange={(e) => setNoteText(e.target.value)}
+          placeholder="Add a note"
+        />
+        <button type="submit">Add Note</button>
+      </form>
+      <h4>Notes</h4>
+
+      {(!client.notes || client.notes.length === 0) && (
+        <p>No notes yet.</p>
+      )}
+
+      {client.notes?.map((note) => (
+        <p key={note.id}>{note.text}</p>
+      ))}
     </section>
   );
 }

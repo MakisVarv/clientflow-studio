@@ -64,6 +64,27 @@ export default function ClientPage() {
 
     setEditingClientId(null);
   }
+  function handleAddNote(clientId, noteText) {
+    setClientList((currentClients) =>
+      currentClients.map((client) => {
+        if (client.id !== clientId) {
+          return client;
+        }
+
+        return {
+          ...client,
+          notes: [
+            ...(client.notes || []),
+            {
+              id: Date.now(),
+              text: noteText,
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        };
+      }),
+    );
+  }
   const {
     term,
     statusFilter,
@@ -99,6 +120,7 @@ export default function ClientPage() {
             client={selectedClient}
             onDeleteClient={handleDeleteClient}
             onEditClient={handleEdit}
+            onAddNote={handleAddNote}
           />
           <ClientForm
             onCreateClient={handleCreateClient}

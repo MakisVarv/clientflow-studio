@@ -156,7 +156,6 @@ export default function ClientForm({
           <option>inactive</option>
           <option>lead</option>
         </select>
-
         <input
           type="submit"
           value={editingClient ? 'Update Client' : 'Create Client'}
