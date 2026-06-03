@@ -5,6 +5,7 @@ export default function ClientDetails({
   onDeleteClient,
   onEditClient,
   onAddNote,
+  onDeleteNote,
 }) {
   const [noteText, setNoteText] = useState('');
   if (!client) {
@@ -52,7 +53,12 @@ export default function ClientDetails({
       )}
 
       {client.notes?.map((note) => (
-        <p key={note.id}>{note.text}</p>
+        <div key={note.id}>
+          <p>{note.text}</p>
+          <button onClick={() => onDeleteNote(client.id, note.id)}>
+            Delete Note
+          </button>
+        </div>
       ))}
     </section>
   );

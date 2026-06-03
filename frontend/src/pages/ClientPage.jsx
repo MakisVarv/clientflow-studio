@@ -85,6 +85,22 @@ export default function ClientPage() {
       }),
     );
   }
+  function handleDeleteNote(clientId, noteId) {
+    setClientList((currentClients) =>
+      currentClients.map((client) => {
+        if (client.id !== clientId) {
+          return client;
+        }
+
+        return {
+          ...client,
+          notes: (client.notes || []).filter(
+            (note) => note.id !== noteId,
+          ),
+        };
+      }),
+    );
+  }
   const {
     term,
     statusFilter,
@@ -121,6 +137,7 @@ export default function ClientPage() {
             onDeleteClient={handleDeleteClient}
             onEditClient={handleEdit}
             onAddNote={handleAddNote}
+            onDeleteNote={handleDeleteNote}
           />
           <ClientForm
             onCreateClient={handleCreateClient}
