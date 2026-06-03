@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { clients } from '../data/clients';
-import ClientForm from './ClientForm';
+import ClientForm from '../components/ClientForm';
 import ClientFilters from '../components/ClientFilters';
 import ClientList from '../components/ClientList';
 import useClientFilters from '../hooks/useClientFilters';

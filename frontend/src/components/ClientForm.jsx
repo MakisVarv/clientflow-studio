@@ -80,6 +80,7 @@ export default function ClientForm({
       <form onSubmit={handleSubmit}>
         <label htmlFor="name">Name</label>
         <input
+          id="name"
           name="name"
           type="text"
           placeholder="Name"
@@ -88,6 +89,7 @@ export default function ClientForm({
         ></input>
         <label htmlFor="company">Company</label>
         <input
+          id="company"
           name="company"
           type="text"
           placeholder="Company Name"
@@ -96,6 +98,7 @@ export default function ClientForm({
         ></input>
         <label htmlFor="email">E-mail</label>
         <input
+          id="email"
           name="email"
           type="email"
           placeholder="E-mail"
@@ -104,6 +107,7 @@ export default function ClientForm({
         ></input>
         <label htmlFor="status">Status</label>
         <select
+          id="status"
           name="status"
           value={form.status}
           onChange={handleFieldChange}
