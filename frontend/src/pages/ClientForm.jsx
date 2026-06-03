@@ -1,52 +1,8 @@
 import { useEffect, useReducer } from 'react';
-
-const initialForm = {
-  name: '',
-  company: '',
-  email: '',
-  status: 'active',
-};
-
-const initialState = {
-  form: initialForm,
-  error: '',
-};
-function clientFormReducer(state, action) {
-  switch (action.type) {
-    case 'CHANGE_FIELD':
-      return {
-        ...state,
-        form: {
-          ...state.form,
-          [action.field]: action.value,
-        },
-      };
-    case 'LOAD_CLIENT':
-      return {
-        ...state,
-        form: action.client,
-        error: '',
-      };
-
-    case 'RESET_FORM':
-      return initialState;
-
-    case 'SET_ERROR':
-      return {
-        ...state,
-        error: action.message,
-      };
-
-    case 'CLEAR_ERROR':
-      return {
-        ...state,
-        error: '',
-      };
-
-    default:
-      return state;
-  }
-}
+import {
+  clientFormReducer,
+  initialState,
+} from '../reducers/clientFormReducer';
 
 export default function ClientForm({
   onCreateClient,
@@ -103,8 +59,8 @@ export default function ClientForm({
     }
     if (editingClient) {
       const updatedClient = {
+        ...editingClient,
         ...form,
-        id: editingClient.id,
       };
 
       onUpdateClient(updatedClient);
