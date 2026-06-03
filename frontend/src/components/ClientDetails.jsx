@@ -27,7 +27,7 @@ export default function ClientDetails({
     setNoteText('');
   }
   return (
-    <section>
+    <section className="client-details">
       <h2>Client Details</h2>
 
       <h3>{client.name}</h3>
@@ -53,7 +53,7 @@ export default function ClientDetails({
       )}
 
       {client.notes?.map((note) => (
-        <div key={note.id}>
+        <div className="note-item" key={note.id}>
           <p>{note.text}</p>
           <button onClick={() => onDeleteNote(client.id, note.id)}>
             Delete Note

@@ -6,7 +6,7 @@ export default function ClientFilters({
   onClear,
 }) {
   return (
-    <>
+    <div className="filters">
       <input value={term} onChange={onSearchChange} />
       <select value={statusFilter} onChange={onStatusChange}>
         <option>all</option>
@@ -15,6 +15,6 @@ export default function ClientFilters({
         <option>lead</option>
       </select>
       <button onClick={onClear}>Clear Filters</button>
-    </>
+    </div>
   );
 }

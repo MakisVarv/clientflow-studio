@@ -13,6 +13,7 @@ export default function ClientCard({
   };
   return (
     <div
+      className={`client-card ${isSelected ? 'selected' : ''}`}
       onClick={() => onSelectClient(id)}
       style={{
         border: isSelected ? '2px solid blue' : '1px solid gray',

@@ -5,8 +5,10 @@ import ClientFilters from '../components/ClientFilters';
 import ClientList from '../components/ClientList';
 import useClientFilters from '../hooks/useClientFilters';
 import ClientDetails from '../components/ClientDetails';
+import { useToast } from '../context/ToastContext';
 
 export default function ClientPage() {
+  const { showToast } = useToast();
   const [clientList, setClientList] = useState(() => {
     const savedClients = localStorage.getItem('clientflow_clients');
 
@@ -43,14 +45,17 @@ export default function ClientPage() {
     if (editingClientId === id) {
       setEditingClientId(null);
     }
+    showToast('Client deleted successfully');
   }
   function handleResetDemo() {
     setClientList(clients);
     setSelectedClientId(null);
     setEditingClientId(null);
+    showToast('Demo data restored');
   }
   function handleCreateClient(client) {
     setClientList((currentClients) => [...currentClients, client]);
+    showToast('Client created successfully');
   }
   function handleCancelEdit() {
     setEditingClientId(null);
@@ -63,6 +68,7 @@ export default function ClientPage() {
     );
 
     setEditingClientId(null);
+    showToast('Client updated successfully');
   }
   function handleAddNote(clientId, noteText) {
     setClientList((currentClients) =>
@@ -84,6 +90,7 @@ export default function ClientPage() {
         };
       }),
     );
+    showToast('Note added successfully');
   }
   function handleDeleteNote(clientId, noteId) {
     setClientList((currentClients) =>
@@ -100,6 +107,7 @@ export default function ClientPage() {
         };
       }),
     );
+    showToast('Note deleted successfully');
   }
   const {
     term,
@@ -111,7 +119,8 @@ export default function ClientPage() {
   } = useClientFilters(clientList);
 
   return (
-    <div>
+    <div className="app">
+      <h1>ClientFlow Mini CRM</h1>
       <ClientFilters
         term={term}
         statusFilter={statusFilter}
@@ -119,7 +128,7 @@ export default function ClientPage() {
         onStatusChange={handleStatusChange}
         onClear={handleClear}
       />
-      <div className="container">
+      <div className="workspace">
         <div>
           <button onClick={handleResetDemo}>
             Reset Demo clients
@@ -131,7 +140,7 @@ export default function ClientPage() {
             onSelectClient={setSelectedClientId}
           />
         </div>
-        <div>
+        <div className="side-panel">
           <ClientDetails
             client={selectedClient}
             onDeleteClient={handleDeleteClient}

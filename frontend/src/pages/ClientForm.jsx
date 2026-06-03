@@ -120,7 +120,7 @@ export default function ClientForm({
     dispatch({ type: 'RESET_FORM' });
   }
   return (
-    <>
+    <div className="client-form">
       <form onSubmit={handleSubmit}>
         <label htmlFor="name">Name</label>
         <input
@@ -167,6 +167,6 @@ export default function ClientForm({
           Cancel
         </button>
       )}
-    </>
+    </div>
   );
 }

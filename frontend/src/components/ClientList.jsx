@@ -7,7 +7,7 @@ export default function ClientList({
   onSelectClient,
 }) {
   return (
-    <div>
+    <div className="client-list">
       {clients.length === 0 && <p>No Clients found</p>}
       <p>
         {clients.length} clients out of {totalClients.length} found.
