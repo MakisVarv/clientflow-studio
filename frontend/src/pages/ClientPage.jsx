@@ -55,6 +55,15 @@ export default function ClientPage() {
     showToast('Demo data restored');
   }
   function handleCreateClient(client) {
+    const emailExists = clientList.some(
+      (existingClient) =>
+        existingClient.email.trim().toLowerCase() ===
+        client.email.trim().toLowerCase(),
+    );
+    if (emailExists) {
+      showToast('A client with this email already exists');
+      return;
+    }
     setClientList((currentClients) => [...currentClients, client]);
     showToast('Client created successfully');
   }
