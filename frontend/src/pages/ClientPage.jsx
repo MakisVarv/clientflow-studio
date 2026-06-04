@@ -6,6 +6,7 @@ import ClientList from '../components/ClientList';
 import useClientFilters from '../hooks/useClientFilters';
 import ClientDetails from '../components/ClientDetails';
 import { useToast } from '../context/ToastContext';
+import ClientStats from '../components/ClientStats';
 
 export default function ClientPage() {
   const { showToast } = useToast();
@@ -135,6 +136,7 @@ export default function ClientPage() {
           <button onClick={handleResetDemo}>
             Reset Demo clients
           </button>
+          <ClientStats clients={clientList} />
           <ClientList
             clients={filteredClients}
             totalClients={clientList}
