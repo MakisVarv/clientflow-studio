@@ -1,6 +1,7 @@
 export default function ClientFilters({
   term,
   statusFilter,
+  statuses,
   onSearchChange,
   onStatusChange,
   onClear,
@@ -9,10 +10,12 @@ export default function ClientFilters({
     <div className="filters">
       <input value={term} onChange={onSearchChange} />
       <select value={statusFilter} onChange={onStatusChange}>
-        <option>all</option>
-        <option>active</option>
-        <option>inactive</option>
-        <option>lead</option>
+        {statuses.map((status) => (
+          <option key={status} value={status}>
+            {status}
+          </option>
+        ))}
+        ;
       </select>
       <button onClick={onClear}>Clear Filters</button>
     </div>

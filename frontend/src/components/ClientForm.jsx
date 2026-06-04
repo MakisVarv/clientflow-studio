@@ -67,7 +67,7 @@ export default function ClientForm({
     } else {
       const client = {
         ...form,
-        id: Date.now(),
+        id: crypto.randomUUID(),
       };
 
       onCreateClient(client);
@@ -77,7 +77,7 @@ export default function ClientForm({
   }
   return (
     <div className="client-form">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <label htmlFor="name">Name</label>
         <input
           id="name"

@@ -52,14 +52,24 @@ export default function ClientDetails({
         <p>No notes yet.</p>
       )}
 
-      {client.notes?.map((note) => (
-        <div className="note-item" key={note.id}>
-          <p>{note.text}</p>
-          <button onClick={() => onDeleteNote(client.id, note.id)}>
-            Delete Note
-          </button>
-        </div>
-      ))}
+      {client.notes?.map((note) => {
+        const formattedDate = note.createdAt
+          ? new Intl.DateTimeFormat('en-GB', {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            }).format(new Date(note.createdAt))
+          : 'No date';
+
+        return (
+          <div key={note.id} className="note-item">
+            <p>{note.text}</p>
+            <small>Added: {formattedDate}</small>
+            <button onClick={() => onDeleteNote(client.id, note.id)}>
+              Delete Note
+            </button>
+          </div>
+        );
+      })}
     </section>
   );
 }

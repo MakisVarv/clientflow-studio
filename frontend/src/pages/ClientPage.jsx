@@ -82,7 +82,7 @@ export default function ClientPage() {
           notes: [
             ...(client.notes || []),
             {
-              id: Date.now(),
+              id: crypto.randomUUID(),
               text: noteText,
               createdAt: new Date().toISOString(),
             },
@@ -112,6 +112,7 @@ export default function ClientPage() {
   const {
     term,
     statusFilter,
+    availableStatuses,
     filteredClients,
     handleSearchChange,
     handleStatusChange,
@@ -123,6 +124,7 @@ export default function ClientPage() {
       <h1>ClientFlow Mini CRM</h1>
       <ClientFilters
         term={term}
+        statuses={availableStatuses}
         statusFilter={statusFilter}
         onSearchChange={handleSearchChange}
         onStatusChange={handleStatusChange}

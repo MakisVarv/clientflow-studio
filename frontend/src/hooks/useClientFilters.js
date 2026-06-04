@@ -15,6 +15,10 @@ export default function useClientFilters(list) {
     setTerm('');
     setStatusFilter('all');
   }
+  const availableStatuses = [
+    'all',
+    ...new Set(list.map((client) => client.status)),
+  ];
   const filteredClients = list.filter((client) => {
     const matchesSearch =
       client.name.toLowerCase().includes(term) ||
@@ -30,6 +34,7 @@ export default function useClientFilters(list) {
   return {
     term,
     statusFilter,
+    availableStatuses,
     filteredClients,
     handleSearchChange,
     handleStatusChange,
