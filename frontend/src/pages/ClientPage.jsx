@@ -6,9 +6,12 @@ import useClientFilters from '../hooks/useClientFilters';
 import ClientDetails from '../components/ClientDetails';
 import { useToast } from '../context/ToastContext';
 import ClientStats from '../components/ClientStats';
+import { useDispatch, useSelector } from 'react-redux';
+import { setClients } from '../features/clients/clientsSlice';
 import {
   addNote,
   createClient,
+  deleteClient,
   deleteNote,
   getClients,
   resetClients,
@@ -17,7 +20,9 @@ import {
 
 export default function ClientPage() {
   const { showToast } = useToast();
-  const [clientList, setClientList] = useState([]);
+  const dispatch = useDispatch();
+
+  const clientList = useSelector((state) => state.clients.items);
   const [loadError, setLoadError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [selectedClientId, setSelectedClientId] = useState(null);
@@ -30,7 +35,7 @@ export default function ClientPage() {
         const loadedClients = await getClients();
 
         if (isMounted) {
-          setClientList(loadedClients);
+          dispatch(setClients(loadedClients));
         }
       } catch (error) {
         if (isMounted) {
@@ -63,7 +68,7 @@ export default function ClientPage() {
     try {
       const updatedClients = await deleteClient(id);
 
-      setClientList(updatedClients);
+      dispatch(setClients(updatedClients));
       setSelectedClientId(null);
 
       if (editingClientId === id) {
@@ -79,7 +84,7 @@ export default function ClientPage() {
     try {
       const resetData = await resetClients();
 
-      setClientList(resetData);
+      dispatch(setClients(resetData));
       setSelectedClientId(null);
       setEditingClientId(null);
       showToast('Demo data restored');
@@ -99,7 +104,7 @@ export default function ClientPage() {
     }
     try {
       const updatedClients = await createClient(client);
-      setClientList(updatedClients);
+      dispatch(setClients(updatedClients));
       showToast('Client created successfully');
     } catch (error) {
       showToast('Failed to create client');
@@ -112,8 +117,7 @@ export default function ClientPage() {
     try {
       const updatedClients = await updateClient(updatedClient);
 
-      setClientList(updatedClients);
-      setEditingClientId(null);
+      dispatch(setClients(updatedClients));
       showToast('Client updated successfully');
     } catch (error) {
       showToast('Failed to update client');
@@ -122,7 +126,7 @@ export default function ClientPage() {
   async function handleAddNote(clientId, noteText) {
     try {
       const updatedClients = await addNote(clientId, noteText);
-      setClientList(updatedClients);
+      dispatch(setClients(updatedClients));
       showToast('Note added successfully');
     } catch (error) {
       showToast('Failed to add note');
@@ -131,7 +135,7 @@ export default function ClientPage() {
   async function handleDeleteNote(clientId, noteId) {
     try {
       const updatedClients = await deleteNote(clientId, noteId);
-      setClientList(updatedClients);
+      dispatch(setClients(updatedClients));
       showToast('Note delete successfully');
     } catch (error) {
       showToast('Failed to delete note');
