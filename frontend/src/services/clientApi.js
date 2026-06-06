@@ -50,6 +50,12 @@ export async function addNote(clientId, noteText) {
 
   const currentClients = loadClients();
 
+  const note = {
+    id: crypto.randomUUID(),
+    text: noteText,
+    createdAt: new Date().toISOString(),
+  };
+
   const updatedClients = currentClients.map((client) => {
     if (client.id !== clientId) {
       return client;
@@ -57,20 +63,13 @@ export async function addNote(clientId, noteText) {
 
     return {
       ...client,
-      notes: [
-        ...(client.notes || []),
-        {
-          id: crypto.randomUUID(),
-          text: noteText,
-          createdAt: new Date().toISOString(),
-        },
-      ],
+      notes: [...(client.notes || []), note],
     };
   });
 
   saveClients(updatedClients);
 
-  return updatedClients;
+  return note;
 }
 export async function deleteNote(clientId, noteId) {
   await delay(300);
@@ -78,9 +77,7 @@ export async function deleteNote(clientId, noteId) {
   const currentClients = loadClients();
 
   const updatedClients = currentClients.map((client) => {
-    if (client.id !== clientId) {
-      return client;
-    }
+    if (client.id !== clientId) return client;
 
     return {
       ...client,
@@ -92,7 +89,7 @@ export async function deleteNote(clientId, noteId) {
 
   saveClients(updatedClients);
 
-  return updatedClients;
+  return { clientId, noteId };
 }
 export async function resetClients() {
   await delay(300);

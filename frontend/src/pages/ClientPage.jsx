@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import ClientForm from '../components/ClientForm';
 import ClientFilters from '../components/ClientFilters';
@@ -7,7 +8,17 @@ import ClientDetails from '../components/ClientDetails';
 import { useToast } from '../context/ToastContext';
 import ClientStats from '../components/ClientStats';
 import { useDispatch, useSelector } from 'react-redux';
-import { setClients } from '../features/clients/clientsSlice';
+import {
+  clientAdded,
+  clientDeleted,
+  clientsReset,
+  clientUpdated,
+  noteAdded,
+  noteDeleted,
+  setClients,
+  setClientsError,
+  setClientsLoading,
+} from '../features/clients/clientsSlice';
 import {
   addNote,
   createClient,
@@ -17,14 +28,18 @@ import {
   resetClients,
   updateClient,
 } from '../services/clientApi';
+import {
+  selectClients,
+  selectClientsError,
+  selectClientsLoading,
+} from '../features/clients/clientsSelectors';
 
 export default function ClientPage() {
   const { showToast } = useToast();
   const dispatch = useDispatch();
-
-  const clientList = useSelector((state) => state.clients.items);
-  const [loadError, setLoadError] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const clientList = useSelector(selectClients);
+  const isLoading = useSelector(selectClientsLoading);
+  const loadError = useSelector(selectClientsError);
   const [selectedClientId, setSelectedClientId] = useState(null);
   const [editingClientId, setEditingClientId] = useState(null);
   useEffect(() => {
@@ -39,11 +54,11 @@ export default function ClientPage() {
         }
       } catch (error) {
         if (isMounted) {
-          setLoadError('Failed to load clients.');
+          dispatch(setClientsError('Failed to load clients.'));
         }
       } finally {
         if (isMounted) {
-          setIsLoading(false);
+          dispatch(setClientsLoading(false));
         }
       }
     }
@@ -66,9 +81,9 @@ export default function ClientPage() {
   );
   async function handleDeleteClient(id) {
     try {
-      const updatedClients = await deleteClient(id);
+      await deleteClient(id);
 
-      dispatch(setClients(updatedClients));
+      dispatch(clientDeleted(id));
       setSelectedClientId(null);
 
       if (editingClientId === id) {
@@ -84,7 +99,8 @@ export default function ClientPage() {
     try {
       const resetData = await resetClients();
 
-      dispatch(setClients(resetData));
+      dispatch(clientsReset(resetData));
+
       setSelectedClientId(null);
       setEditingClientId(null);
       showToast('Demo data restored');
@@ -103,10 +119,11 @@ export default function ClientPage() {
       return;
     }
     try {
-      const updatedClients = await createClient(client);
-      dispatch(setClients(updatedClients));
+      await createClient(client);
+      dispatch(clientAdded(client));
       showToast('Client created successfully');
     } catch (error) {
+      console.log(error);
       showToast('Failed to create client');
     }
   }
@@ -115,9 +132,9 @@ export default function ClientPage() {
   }
   async function handleUpdateClient(updatedClient) {
     try {
-      const updatedClients = await updateClient(updatedClient);
+      await updateClient(updatedClient);
+      dispatch(clientUpdated(updatedClient));
 
-      dispatch(setClients(updatedClients));
       showToast('Client updated successfully');
     } catch (error) {
       showToast('Failed to update client');
@@ -125,8 +142,9 @@ export default function ClientPage() {
   }
   async function handleAddNote(clientId, noteText) {
     try {
-      const updatedClients = await addNote(clientId, noteText);
-      dispatch(setClients(updatedClients));
+      const note = await addNote(clientId, noteText);
+
+      dispatch(noteAdded({ clientId, note }));
       showToast('Note added successfully');
     } catch (error) {
       showToast('Failed to add note');
@@ -134,8 +152,9 @@ export default function ClientPage() {
   }
   async function handleDeleteNote(clientId, noteId) {
     try {
-      const updatedClients = await deleteNote(clientId, noteId);
-      dispatch(setClients(updatedClients));
+      await deleteNote(clientId, noteId);
+
+      dispatch(noteDeleted({ clientId, noteId }));
       showToast('Note delete successfully');
     } catch (error) {
       showToast('Failed to delete note');
