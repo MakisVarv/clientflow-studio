@@ -1,4 +1,11 @@
 export default function ClientStats({ clients }) {
+  function formatLabel(value) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  const statusCounts = clients.reduce((acc, client) => {
+    acc[client.status] = (acc[client.status] || 0) + 1;
+    return acc;
+  }, {});
   const stats = clients.reduce(
     (acc, client) => {
       acc.total += 1;
@@ -18,9 +25,11 @@ export default function ClientStats({ clients }) {
     <section className="client-stats">
       <h2>Client Stats</h2>
       <p>Total clients: {stats.total}</p>
-      <p>Active: {stats.active}</p>
-      <p>Leads: {stats.lead}</p>
-      <p>Inactive: {stats.inactive}</p>
+      {Object.entries(statusCounts).map(([status, count]) => (
+        <p key={status}>
+          {formatLabel(status)}: {count}
+        </p>
+      ))}
       <p>Total notes: {stats.notes}</p>
     </section>
   );

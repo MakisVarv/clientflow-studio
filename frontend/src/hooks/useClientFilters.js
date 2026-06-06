@@ -3,6 +3,7 @@ import { useState } from 'react';
 export default function useClientFilters(list) {
   const [term, setTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('name');
   function handleSearchChange(e) {
     const value = e.target.value.toLowerCase();
     setTerm(value);
@@ -10,6 +11,9 @@ export default function useClientFilters(list) {
   function handleStatusChange(e) {
     const value = e.target.value.toLowerCase();
     setStatusFilter(value);
+  }
+  function handleSortChange(e) {
+    setSortBy(e.target.value);
   }
   function handleClear() {
     setTerm('');
@@ -31,11 +35,32 @@ export default function useClientFilters(list) {
 
     return matchesSearch && matchesStatus;
   });
+  const sortedClients = filteredClients.toSorted((a, b) => {
+    if (sortBy === 'name') {
+      return a.name.localeCompare(b.name);
+    }
+
+    if (sortBy === 'company') {
+      return a.company.localeCompare(b.company);
+    }
+
+    if (sortBy === 'status') {
+      return a.status.localeCompare(b.status);
+    }
+
+    if (sortBy === 'newest') {
+      return String(b.id).localeCompare(String(a.id));
+    }
+
+    return 0;
+  });
   return {
     term,
     statusFilter,
     availableStatuses,
-    filteredClients,
+    filteredClients: sortedClients,
+    sortBy,
+    handleSortChange,
     handleSearchChange,
     handleStatusChange,
     handleClear,
