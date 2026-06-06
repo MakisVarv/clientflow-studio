@@ -7,25 +7,15 @@ import useClientFilters from '../hooks/useClientFilters';
 import ClientDetails from '../components/ClientDetails';
 import { useToast } from '../context/ToastContext';
 import ClientStats from '../components/ClientStats';
+import { loadClients, saveClients } from '../services/clientStorage';
 
 export default function ClientPage() {
   const { showToast } = useToast();
-  const [clientList, setClientList] = useState(() => {
-    const savedClients = localStorage.getItem('clientflow_clients');
-
-    if (savedClients) {
-      return JSON.parse(savedClients);
-    }
-
-    return clients;
-  });
+  const [clientList, setClientList] = useState(() => loadClients());
   const [selectedClientId, setSelectedClientId] = useState(null);
   const [editingClientId, setEditingClientId] = useState(null);
   useEffect(() => {
-    localStorage.setItem(
-      'clientflow_clients',
-      JSON.stringify(clientList),
-    );
+    saveClients(clientList);
   }, [clientList]);
   function handleEdit(id) {
     setEditingClientId(id);
@@ -124,6 +114,8 @@ export default function ClientPage() {
     statusFilter,
     availableStatuses,
     filteredClients,
+    sortBy,
+    handleSortChange,
     handleSearchChange,
     handleStatusChange,
     handleClear,
@@ -136,6 +128,8 @@ export default function ClientPage() {
         term={term}
         statuses={availableStatuses}
         statusFilter={statusFilter}
+        sortBy={sortBy}
+        onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
         onStatusChange={handleStatusChange}
         onClear={handleClear}
