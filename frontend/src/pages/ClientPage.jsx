@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { clients } from '../data/clients';
 import ClientForm from '../components/ClientForm';
 import ClientFilters from '../components/ClientFilters';
 import ClientList from '../components/ClientList';
@@ -7,16 +6,50 @@ import useClientFilters from '../hooks/useClientFilters';
 import ClientDetails from '../components/ClientDetails';
 import { useToast } from '../context/ToastContext';
 import ClientStats from '../components/ClientStats';
-import { loadClients, saveClients } from '../services/clientStorage';
+import {
+  addNote,
+  createClient,
+  deleteNote,
+  getClients,
+  resetClients,
+  updateClient,
+} from '../services/clientApi';
 
 export default function ClientPage() {
   const { showToast } = useToast();
-  const [clientList, setClientList] = useState(() => loadClients());
+  const [clientList, setClientList] = useState([]);
+  const [loadError, setLoadError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedClientId, setSelectedClientId] = useState(null);
   const [editingClientId, setEditingClientId] = useState(null);
   useEffect(() => {
-    saveClients(clientList);
-  }, [clientList]);
+    let isMounted = true;
+
+    async function loadInitialClients() {
+      try {
+        const loadedClients = await getClients();
+
+        if (isMounted) {
+          setClientList(loadedClients);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setLoadError('Failed to load clients.');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadInitialClients();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   function handleEdit(id) {
     setEditingClientId(id);
   }
@@ -26,25 +59,35 @@ export default function ClientPage() {
   const selectedClient = clientList.find(
     (client) => client.id === selectedClientId,
   );
-  function handleDeleteClient(id) {
-    setClientList((currentClients) =>
-      currentClients.filter((client) => client.id !== id),
-    );
+  async function handleDeleteClient(id) {
+    try {
+      const updatedClients = await deleteClient(id);
 
-    setSelectedClientId(null);
+      setClientList(updatedClients);
+      setSelectedClientId(null);
 
-    if (editingClientId === id) {
-      setEditingClientId(null);
+      if (editingClientId === id) {
+        setEditingClientId(null);
+      }
+
+      showToast('Client deleted successfully');
+    } catch (error) {
+      showToast('Failed to delete client');
     }
-    showToast('Client deleted successfully');
   }
-  function handleResetDemo() {
-    setClientList(clients);
-    setSelectedClientId(null);
-    setEditingClientId(null);
-    showToast('Demo data restored');
+  async function handleResetDemo() {
+    try {
+      const resetData = await resetClients();
+
+      setClientList(resetData);
+      setSelectedClientId(null);
+      setEditingClientId(null);
+      showToast('Demo data restored');
+    } catch (error) {
+      showToast('Failed to reset demo data');
+    }
   }
-  function handleCreateClient(client) {
+  async function handleCreateClient(client) {
     const emailExists = clientList.some(
       (existingClient) =>
         existingClient.email.trim().toLowerCase() ===
@@ -54,60 +97,45 @@ export default function ClientPage() {
       showToast('A client with this email already exists');
       return;
     }
-    setClientList((currentClients) => [...currentClients, client]);
-    showToast('Client created successfully');
+    try {
+      const updatedClients = await createClient(client);
+      setClientList(updatedClients);
+      showToast('Client created successfully');
+    } catch (error) {
+      showToast('Failed to create client');
+    }
   }
   function handleCancelEdit() {
     setEditingClientId(null);
   }
-  function handleUpdateClient(updatedClient) {
-    setClientList((currentClients) =>
-      currentClients.map((client) =>
-        client.id === updatedClient.id ? updatedClient : client,
-      ),
-    );
+  async function handleUpdateClient(updatedClient) {
+    try {
+      const updatedClients = await updateClient(updatedClient);
 
-    setEditingClientId(null);
-    showToast('Client updated successfully');
+      setClientList(updatedClients);
+      setEditingClientId(null);
+      showToast('Client updated successfully');
+    } catch (error) {
+      showToast('Failed to update client');
+    }
   }
-  function handleAddNote(clientId, noteText) {
-    setClientList((currentClients) =>
-      currentClients.map((client) => {
-        if (client.id !== clientId) {
-          return client;
-        }
-
-        return {
-          ...client,
-          notes: [
-            ...(client.notes || []),
-            {
-              id: crypto.randomUUID(),
-              text: noteText,
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        };
-      }),
-    );
-    showToast('Note added successfully');
+  async function handleAddNote(clientId, noteText) {
+    try {
+      const updatedClients = await addNote(clientId, noteText);
+      setClientList(updatedClients);
+      showToast('Note added successfully');
+    } catch (error) {
+      showToast('Failed to add note');
+    }
   }
-  function handleDeleteNote(clientId, noteId) {
-    setClientList((currentClients) =>
-      currentClients.map((client) => {
-        if (client.id !== clientId) {
-          return client;
-        }
-
-        return {
-          ...client,
-          notes: (client.notes || []).filter(
-            (note) => note.id !== noteId,
-          ),
-        };
-      }),
-    );
-    showToast('Note deleted successfully');
+  async function handleDeleteNote(clientId, noteId) {
+    try {
+      const updatedClients = await deleteNote(clientId, noteId);
+      setClientList(updatedClients);
+      showToast('Note delete successfully');
+    } catch (error) {
+      showToast('Failed to delete note');
+    }
   }
   const {
     term,
@@ -120,7 +148,12 @@ export default function ClientPage() {
     handleStatusChange,
     handleClear,
   } = useClientFilters(clientList);
-
+  if (loadError) {
+    return <p>{loadError}</p>;
+  }
+  if (isLoading) {
+    return <p>Loading clients...</p>;
+  }
   return (
     <div className="app">
       <h1>ClientFlow Mini CRM</h1>
