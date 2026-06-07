@@ -15,13 +15,13 @@ import {
   fetchClients,
   resetDemoClientsThunk,
   updateClientThunk,
-} from '../features/clients/clientsSlice';
+} from '../store/clients/clientsSlice';
 
 import {
   selectClients,
   selectClientsError,
   selectClientsLoading,
-} from '../features/clients/clientsSelectors';
+} from '../store/clients/clientsSelectors';
 
 export default function ClientPage() {
   const { showToast } = useToast();
