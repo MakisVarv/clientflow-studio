@@ -13,6 +13,7 @@ import {
   clientDeleted,
   clientsReset,
   clientUpdated,
+  fetchClients,
   noteAdded,
   noteDeleted,
   setClients,
@@ -24,7 +25,6 @@ import {
   createClient,
   deleteClient,
   deleteNote,
-  getClients,
   resetClients,
   updateClient,
 } from '../services/clientApi';
@@ -43,32 +43,8 @@ export default function ClientPage() {
   const [selectedClientId, setSelectedClientId] = useState(null);
   const [editingClientId, setEditingClientId] = useState(null);
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadInitialClients() {
-      try {
-        const loadedClients = await getClients();
-
-        if (isMounted) {
-          dispatch(setClients(loadedClients));
-        }
-      } catch (error) {
-        if (isMounted) {
-          dispatch(setClientsError('Failed to load clients.'));
-        }
-      } finally {
-        if (isMounted) {
-          dispatch(setClientsLoading(false));
-        }
-      }
-    }
-
-    loadInitialClients();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    dispatch(fetchClients());
+  }, [dispatch]);
 
   function handleEdit(id) {
     setEditingClientId(id);

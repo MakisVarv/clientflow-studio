@@ -1,10 +1,18 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getClients } from '../../services/clientApi';
 
 const initialState = {
   items: [],
   isLoading: false,
   error: '',
 };
+export const fetchClients = createAsyncThunk(
+  'clients/fetchClients',
+  async () => {
+    const clients = await getClients();
+    return clients;
+  },
+);
 
 const clientsSlice = createSlice({
   name: 'clients',
@@ -67,6 +75,21 @@ const clientsSlice = createSlice({
     clientsReset(state, action) {
       state.items = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchClients.pending, (state) => {
+        state.isLoading = true;
+        state.error = '';
+      })
+      .addCase(fetchClients.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.items = action.payload;
+      })
+      .addCase(fetchClients.rejected, (state) => {
+        state.isLoading = false;
+        state.error = 'Failed to load clients.';
+      });
   },
 });
 

@@ -2,6 +2,7 @@ import { expect, test } from 'vitest';
 import clientsReducer, {
   clientAdded,
   clientDeleted,
+  clientsReset,
   clientUpdated,
   noteAdded,
   noteDeleted,
@@ -207,4 +208,38 @@ test('deletes a note from the correct client', () => {
 
   expect(nextState.items[1].notes).toHaveLength(1);
   expect(nextState.items[1].notes[0].id).toBe('note-3');
+});
+test('resets clients to provided demo data', () => {
+  const previousState = {
+    items: [
+      {
+        id: 'old-client',
+        name: 'Old Client',
+        company: 'Old Company',
+        email: 'old@test.com',
+        status: 'inactive',
+        notes: [],
+      },
+    ],
+    isLoading: false,
+    error: '',
+  };
+
+  const demoClients = [
+    {
+      id: '1',
+      name: 'Maria',
+      company: 'Aegean Digital',
+      email: 'maria@test.com',
+      status: 'active',
+      notes: [],
+    },
+  ];
+
+  const nextState = clientsReducer(
+    previousState,
+    clientsReset(demoClients),
+  );
+
+  expect(nextState.items).toEqual(demoClients);
 });

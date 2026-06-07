@@ -1,6 +1,27 @@
-import { expect, test, beforeEach } from 'vitest';
+import { expect, test, beforeEach, vi } from 'vitest';
 import { loadClients, saveClients } from './clientStorage';
 import { clients } from '../data/clients';
+
+const localStorageMock = (() => {
+  let store = {};
+
+  return {
+    getItem(key) {
+      return store[key] || null;
+    },
+    setItem(key, value) {
+      store[key] = String(value);
+    },
+    removeItem(key) {
+      delete store[key];
+    },
+    clear() {
+      store = {};
+    },
+  };
+})();
+
+vi.stubGlobal('localStorage', localStorageMock);
 
 beforeEach(() => {
   localStorage.clear();
