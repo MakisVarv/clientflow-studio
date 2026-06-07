@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import ClientForm from '../components/ClientForm';
 import ClientFilters from '../components/ClientFilters';
@@ -9,25 +8,15 @@ import { useToast } from '../context/ToastContext';
 import ClientStats from '../components/ClientStats';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  clientAdded,
-  clientDeleted,
-  clientsReset,
-  clientUpdated,
+  addNoteToClientThunk,
+  createClientThunk,
+  deleteClientThunk,
+  deleteNoteFromClientThunk,
   fetchClients,
-  noteAdded,
-  noteDeleted,
-  setClients,
-  setClientsError,
-  setClientsLoading,
+  resetDemoClientsThunk,
+  updateClientThunk,
 } from '../features/clients/clientsSlice';
-import {
-  addNote,
-  createClient,
-  deleteClient,
-  deleteNote,
-  resetClients,
-  updateClient,
-} from '../services/clientApi';
+
 import {
   selectClients,
   selectClientsError,
@@ -57,9 +46,7 @@ export default function ClientPage() {
   );
   async function handleDeleteClient(id) {
     try {
-      await deleteClient(id);
-
-      dispatch(clientDeleted(id));
+      await dispatch(deleteClientThunk(id)).unwrap();
       setSelectedClientId(null);
 
       if (editingClientId === id) {
@@ -73,10 +60,7 @@ export default function ClientPage() {
   }
   async function handleResetDemo() {
     try {
-      const resetData = await resetClients();
-
-      dispatch(clientsReset(resetData));
-
+      await dispatch(resetDemoClientsThunk()).unwrap();
       setSelectedClientId(null);
       setEditingClientId(null);
       showToast('Demo data restored');
@@ -95,11 +79,11 @@ export default function ClientPage() {
       return;
     }
     try {
-      await createClient(client);
-      dispatch(clientAdded(client));
+      const createdClient = await dispatch(
+        createClientThunk(client),
+      ).unwrap();
       showToast('Client created successfully');
     } catch (error) {
-      console.log(error);
       showToast('Failed to create client');
     }
   }
@@ -108,9 +92,9 @@ export default function ClientPage() {
   }
   async function handleUpdateClient(updatedClient) {
     try {
-      await updateClient(updatedClient);
-      dispatch(clientUpdated(updatedClient));
+      await dispatch(updateClientThunk(updatedClient)).unwrap();
 
+      setEditingClientId(null);
       showToast('Client updated successfully');
     } catch (error) {
       showToast('Failed to update client');
@@ -118,9 +102,10 @@ export default function ClientPage() {
   }
   async function handleAddNote(clientId, noteText) {
     try {
-      const note = await addNote(clientId, noteText);
+      await dispatch(
+        addNoteToClientThunk({ clientId, noteText }),
+      ).unwrap();
 
-      dispatch(noteAdded({ clientId, note }));
       showToast('Note added successfully');
     } catch (error) {
       showToast('Failed to add note');
@@ -128,9 +113,9 @@ export default function ClientPage() {
   }
   async function handleDeleteNote(clientId, noteId) {
     try {
-      await deleteNote(clientId, noteId);
-
-      dispatch(noteDeleted({ clientId, noteId }));
+      await dispatch(
+        deleteNoteFromClientThunk({ clientId, noteId }),
+      ).unwrap();
       showToast('Note delete successfully');
     } catch (error) {
       showToast('Failed to delete note');
