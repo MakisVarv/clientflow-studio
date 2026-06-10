@@ -54,7 +54,7 @@ export default function ClientPage() {
       }
 
       showToast('Client deleted successfully');
-    } catch (error) {
+    } catch {
       showToast('Failed to delete client');
     }
   }
@@ -64,7 +64,7 @@ export default function ClientPage() {
       setSelectedClientId(null);
       setEditingClientId(null);
       showToast('Demo data restored');
-    } catch (error) {
+    } catch {
       showToast('Failed to reset demo data');
     }
   }
@@ -79,11 +79,9 @@ export default function ClientPage() {
       return;
     }
     try {
-      const createdClient = await dispatch(
-        createClientThunk(client),
-      ).unwrap();
+      await dispatch(createClientThunk(client)).unwrap();
       showToast('Client created successfully');
-    } catch (error) {
+    } catch {
       showToast('Failed to create client');
     }
   }
@@ -96,7 +94,7 @@ export default function ClientPage() {
 
       setEditingClientId(null);
       showToast('Client updated successfully');
-    } catch (error) {
+    } catch {
       showToast('Failed to update client');
     }
   }
@@ -107,7 +105,7 @@ export default function ClientPage() {
       ).unwrap();
 
       showToast('Note added successfully');
-    } catch (error) {
+    } catch {
       showToast('Failed to add note');
     }
   }
@@ -117,7 +115,7 @@ export default function ClientPage() {
         deleteNoteFromClientThunk({ clientId, noteId }),
       ).unwrap();
       showToast('Note delete successfully');
-    } catch (error) {
+    } catch {
       showToast('Failed to delete note');
     }
   }
@@ -140,7 +138,9 @@ export default function ClientPage() {
   }
   return (
     <div className="app">
-      <h1>ClientFlow Mini CRM</h1>
+      <h1 className="text-3xl font-bold text-slate-900">
+        ClientFlow
+      </h1>
       <ClientFilters
         term={term}
         statuses={availableStatuses}
