@@ -1,5 +1,4 @@
-import { expect, test, vi } from 'vitest';
-import { beforeEach } from 'node:test';
+import { beforeEach, expect, test, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import {
   addNote,

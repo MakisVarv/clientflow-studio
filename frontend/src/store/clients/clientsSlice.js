@@ -171,16 +171,4 @@ const clientsSlice = createSlice({
       });
   },
 });
-
-export const {
-  setClients,
-  setClientsLoading,
-  setClientsError,
-  clientAdded,
-  clientUpdated,
-  clientDeleted,
-  noteAdded,
-  noteDeleted,
-  clientsReset,
-} = clientsSlice.actions;
 export default clientsSlice.reducer;
