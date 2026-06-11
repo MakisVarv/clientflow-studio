@@ -1,9 +1,9 @@
-import ClientPage from './pages/ClientPage';
+import ContactPage from './pages/ContactPage';
 
 export default function App() {
   return (
     <>
-      <ClientPage />
+      <ContactPage />
     </>
   );
 }

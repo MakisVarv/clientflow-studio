@@ -9,7 +9,7 @@ export const initialState = {
   form: initialForm,
   error: '',
 };
-export function clientFormReducer(state, action) {
+export function contactFormReducer(state, action) {
   switch (action.type) {
     case 'CHANGE_FIELD':
       return {
@@ -19,14 +19,14 @@ export function clientFormReducer(state, action) {
           [action.field]: action.value,
         },
       };
-    case 'LOAD_CLIENT':
+    case 'LOAD_CONTACT':
       return {
         ...state,
         form: {
-          name: action.client.name,
-          company: action.client.company,
-          email: action.client.email,
-          status: action.client.status,
+          name: action.contact.name,
+          company: action.contact.company,
+          email: action.contact.email,
+          status: action.contact.status,
         },
         error: '',
       };

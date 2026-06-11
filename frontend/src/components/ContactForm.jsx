@@ -1,17 +1,17 @@
 import { useEffect, useReducer } from 'react';
 import {
-  clientFormReducer,
+  contactFormReducer,
   initialState,
-} from '../reducers/clientFormReducer';
+} from '../reducers/contactFormReducer';
 
-export default function ClientForm({
-  onCreateClient,
-  onUpdateClient,
+export default function ContactForm({
+  onCreateContact,
+  onUpdateContact,
   onCancelEdit,
-  editingClient,
+  editingContact,
 }) {
   const [state, dispatch] = useReducer(
-    clientFormReducer,
+    contactFormReducer,
     initialState,
   );
 
@@ -21,12 +21,12 @@ export default function ClientForm({
     dispatch({ type: 'RESET_FORM' });
   }
   useEffect(() => {
-    if (editingClient) {
-      dispatch({ type: 'LOAD_CLIENT', client: editingClient });
+    if (editingContact) {
+      dispatch({ type: 'LOAD_CONTACT', contact: editingContact });
     } else {
       dispatch({ type: 'RESET_FORM' });
     }
-  }, [editingClient]);
+  }, [editingContact]);
   function handleFieldChange(e) {
     const { name, value } = e.target;
 
@@ -57,26 +57,26 @@ export default function ClientForm({
       });
       return;
     }
-    if (editingClient) {
-      const updatedClient = {
-        ...editingClient,
+    if (editingContact) {
+      const updatedContact = {
+        ...editingContact,
         ...form,
       };
 
-      onUpdateClient(updatedClient);
+      onUpdateContact(updatedContact);
     } else {
-      const client = {
+      const contact = {
         ...form,
         id: crypto.randomUUID(),
       };
 
-      onCreateClient(client);
+      onCreateContact(contact);
     }
 
     dispatch({ type: 'RESET_FORM' });
   }
   return (
-    <div className="client-form">
+    <div className="contact-form">
       <form onSubmit={handleSubmit} noValidate>
         <label htmlFor="name">Name</label>
         <input
@@ -118,11 +118,11 @@ export default function ClientForm({
         </select>
         <input
           type="submit"
-          value={editingClient ? 'Update Client' : 'Create Client'}
+          value={editingContact ? 'Update Contact' : 'Create Contact'}
         />
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
-      {editingClient && (
+      {editingContact && (
         <button type="button" onClick={handleCancel}>
           Cancel
         </button>

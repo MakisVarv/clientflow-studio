@@ -1,16 +1,16 @@
-export default function ClientStats({ clients }) {
+export default function ContactStats({ contacts }) {
   function formatLabel(value) {
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
-  const statusCounts = clients.reduce((acc, client) => {
-    acc[client.status] = (acc[client.status] || 0) + 1;
+  const statusCounts = contacts.reduce((acc, contact) => {
+    acc[contact.status] = (acc[contact.status] || 0) + 1;
     return acc;
   }, {});
-  const stats = clients.reduce(
-    (acc, client) => {
+  const stats = contacts.reduce(
+    (acc, contact) => {
       acc.total += 1;
-      acc[client.status] += 1;
-      acc.notes += client.notes?.length || 0;
+      acc[contact.status] += 1;
+      acc.notes += contact.notes?.length || 0;
       return acc;
     },
     {
@@ -22,9 +22,9 @@ export default function ClientStats({ clients }) {
     },
   );
   return (
-    <section className="client-stats">
-      <h2>Client Stats</h2>
-      <p>Total clients: {stats.total}</p>
+    <section className="contact-stats">
+      <h2>Contact Stats</h2>
+      <p>Total contacts: {stats.total}</p>
       {Object.entries(statusCounts).map(([status, count]) => (
         <p key={status}>
           {formatLabel(status)}: {count}

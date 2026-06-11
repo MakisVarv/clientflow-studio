@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function useClientFilters(list) {
+export default function useContactFilters(list) {
   const [term, setTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('name');
@@ -21,21 +21,21 @@ export default function useClientFilters(list) {
   }
   const availableStatuses = [
     'all',
-    ...new Set(list.map((client) => client.status)),
+    ...new Set(list.map((contact) => contact.status)),
   ];
-  const filteredClients = list.filter((client) => {
+  const filteredContacts = list.filter((contact) => {
     const matchesSearch =
-      client.name.toLowerCase().includes(term) ||
-      client.company.toLowerCase().includes(term) ||
-      client.email.toLowerCase().includes(term);
+      contact.name.toLowerCase().includes(term) ||
+      contact.company.toLowerCase().includes(term) ||
+      contact.email.toLowerCase().includes(term);
 
     const matchesStatus =
       statusFilter === 'all' ||
-      client.status.toLowerCase() === statusFilter;
+      contact.status.toLowerCase() === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
-  const sortedClients = filteredClients.toSorted((a, b) => {
+  const sortedContacts = filteredContacts.toSorted((a, b) => {
     if (sortBy === 'name') {
       return a.name.localeCompare(b.name);
     }
@@ -58,7 +58,7 @@ export default function useClientFilters(list) {
     term,
     statusFilter,
     availableStatuses,
-    filteredClients: sortedClients,
+    filteredContacts: sortedContacts,
     sortBy,
     handleSortChange,
     handleSearchChange,

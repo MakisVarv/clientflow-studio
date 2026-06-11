@@ -1,4 +1,7 @@
-import { clientFormReducer, initialState } from './clientFormReducer';
+import {
+  contactFormReducer,
+  initialState,
+} from './contactFormReducer';
 import { test, expect } from 'vitest';
 
 test('updates one form field', () => {
@@ -8,7 +11,7 @@ test('updates one form field', () => {
     value: 'Maria',
   };
 
-  const nextState = clientFormReducer(initialState, action);
+  const nextState = contactFormReducer(initialState, action);
 
   expect(nextState.form.name).toBe('Maria');
   expect(nextState.form.company).toBe('');
@@ -20,19 +23,19 @@ test('sets validation error message', () => {
     message: 'All fields are required',
   };
 
-  const nextState = clientFormReducer(initialState, action);
+  const nextState = contactFormReducer(initialState, action);
 
   expect(nextState.error).toBe('All fields are required');
   expect(nextState.form).toEqual(initialState.form);
 });
-test('loads client data into the form for edit mode', () => {
-  const client = {
+test('loads contact data into the form for edit mode', () => {
+  const contact = {
     id: 123,
     name: 'Maria Papadopoulou',
     company: 'Aegean Digital',
     email: 'maria@aegeandigital.gr',
     status: 'active',
-    notes: [{ id: 1, text: 'Important client' }],
+    notes: [{ id: 1, text: 'Important contact' }],
   };
 
   const previousState = {
@@ -40,9 +43,9 @@ test('loads client data into the form for edit mode', () => {
     error: 'Some old error',
   };
 
-  const nextState = clientFormReducer(previousState, {
-    type: 'LOAD_CLIENT',
-    client,
+  const nextState = contactFormReducer(previousState, {
+    type: 'LOAD_CONTACT',
+    contact,
   });
 
   expect(nextState.form).toEqual({
@@ -67,7 +70,7 @@ test('resets the form state', () => {
     error: 'Old error',
   };
 
-  const nextState = clientFormReducer(dirtyState, {
+  const nextState = contactFormReducer(dirtyState, {
     type: 'RESET_FORM',
   });
 

@@ -1,6 +1,6 @@
 import { expect, test, beforeEach, vi } from 'vitest';
-import { loadClients, saveClients } from './clientStorage';
-import { clients } from '../data/clients';
+import { loadContacts, saveContacts } from './contactStorage';
+import { contacts } from '../data/contacts';
 
 const localStorageMock = (() => {
   let store = {};
@@ -27,8 +27,8 @@ beforeEach(() => {
   localStorage.clear();
 });
 
-test('saves clients to localStorage', () => {
-  const clients = [
+test('saves contacts to localStorage', () => {
+  const contacts = [
     {
       id: '1',
       name: 'Maria',
@@ -39,17 +39,17 @@ test('saves clients to localStorage', () => {
     },
   ];
 
-  saveClients(clients);
+  saveContacts(contacts);
 
   const saved = JSON.parse(
-    localStorage.getItem('clientflow_clients'),
+    localStorage.getItem('clientflow_contacts'),
   );
 
-  expect(saved).toEqual(clients);
+  expect(saved).toEqual(contacts);
 });
 
-test('loads clients from localStorage when saved data exists', () => {
-  const savedClients = [
+test('loads contacts from localStorage when saved data exists', () => {
+  const savedContacts = [
     {
       id: '1',
       name: 'Maria',
@@ -61,18 +61,18 @@ test('loads clients from localStorage when saved data exists', () => {
   ];
 
   localStorage.setItem(
-    'clientflow_clients',
-    JSON.stringify(savedClients),
+    'clientflow_contacts',
+    JSON.stringify(savedContacts),
   );
 
-  const result = loadClients();
+  const result = loadContacts();
 
-  expect(result).toEqual(savedClients);
+  expect(result).toEqual(savedContacts);
 });
-test('returns seed clients when localStorage contains invalid JSON', () => {
-  localStorage.setItem('clientflow_clients', 'not-valid-json');
+test('returns seed contacts when localStorage contains invalid JSON', () => {
+  localStorage.setItem('clientflow_contacts', 'not-valid-json');
 
-  const result = loadClients();
+  const result = loadContacts();
 
-  expect(result).toEqual(clients);
+  expect(result).toEqual(contacts);
 });

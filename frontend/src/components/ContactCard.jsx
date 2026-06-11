@@ -1,9 +1,9 @@
-export default function ClientCard({
-  client,
-  onSelectClient,
+export default function ContactCard({
+  contact,
+  onSelectContact,
   isSelected,
 }) {
-  const { id, name, company, email, status } = client;
+  const { id, name, company, email, status } = contact;
   const statusClass = (status) => {
     return status === 'active'
       ? { color: 'green' }
@@ -14,7 +14,7 @@ export default function ClientCard({
   return (
     <div
       className={`client-card ${isSelected ? 'selected' : ''}`}
-      onClick={() => onSelectClient(id)}
+      onClick={() => onSelectContact(id)}
       style={{
         border: isSelected ? '2px solid blue' : '1px solid gray',
         cursor: 'pointer',

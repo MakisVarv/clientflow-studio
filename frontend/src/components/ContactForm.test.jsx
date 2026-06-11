@@ -1,19 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, test, vi } from 'vitest';
-import ClientForm from './ClientForm';
+import ContactForm from './ContactForm';
 
-test('creates a client when the form is submitted', async () => {
+test('creates a contact when the form is submitted', async () => {
   const user = userEvent.setup();
 
-  const onCreateClient = vi.fn();
+  const onCreateContact = vi.fn();
 
   render(
-    <ClientForm
-      onCreateClient={onCreateClient}
-      onUpdateClient={vi.fn()}
+    <ContactForm
+      onCreateContact={onCreateContact}
+      onUpdateContact={vi.fn()}
       onCancelEdit={vi.fn()}
-      editingClient={null}
+      editingContact={null}
     />,
   );
 
@@ -26,11 +26,11 @@ test('creates a client when the form is submitted', async () => {
   await user.selectOptions(screen.getByLabelText(/status/i), 'lead');
 
   await user.click(
-    screen.getByRole('button', { name: /create client/i }),
+    screen.getByRole('button', { name: /create contact/i }),
   );
 
-  expect(onCreateClient).toHaveBeenCalledTimes(1);
-  expect(onCreateClient).toHaveBeenCalledWith(
+  expect(onCreateContact).toHaveBeenCalledTimes(1);
+  expect(onCreateContact).toHaveBeenCalledWith(
     expect.objectContaining({
       name: 'Maria',
       company: 'Aegean Digital',
@@ -39,30 +39,30 @@ test('creates a client when the form is submitted', async () => {
     }),
   );
 });
-test('error on create client without filling fields', async () => {
+test('error on create contact without filling fields', async () => {
   const user = userEvent.setup();
-  const onCreateClient = vi.fn();
+  const onCreateContact = vi.fn();
   render(
-    <ClientForm
-      onCreateClient={onCreateClient}
-      onUpdateClient={vi.fn()}
+    <ContactForm
+      onCreateContact={onCreateContact}
+      onUpdateContact={vi.fn()}
       onCancelEdit={vi.fn()}
-      editingClient={null}
+      editingContact={null}
     />,
   );
   await user.click(
-    screen.getByRole('button', { name: /create client/i }),
+    screen.getByRole('button', { name: /create contact/i }),
   );
   expect(
     screen.getByText(/all fields are required/i),
   ).toBeInTheDocument();
-  expect(onCreateClient).not.toHaveBeenCalled();
+  expect(onCreateContact).not.toHaveBeenCalled();
 });
-test('fill editing client and update successfully', async () => {
+test('fill editing contact and update successfully', async () => {
   const user = userEvent.setup();
-  const onCreateClient = vi.fn();
-  const onUpdateClient = vi.fn();
-  const client = {
+  const onCreateContact = vi.fn();
+  const onUpdateContact = vi.fn();
+  const contact = {
     id: 1,
     name: 'Maria',
     company: 'Aegean Digital',
@@ -71,11 +71,11 @@ test('fill editing client and update successfully', async () => {
     notes: [],
   };
   render(
-    <ClientForm
-      onCreateClient={onCreateClient}
-      onUpdateClient={onUpdateClient}
+    <ContactForm
+      onCreateContact={onCreateContact}
+      onUpdateContact={onUpdateContact}
       onCancelEdit={vi.fn()}
-      editingClient={client}
+      editingContact={contact}
     />,
   );
   await user.selectOptions(
@@ -83,11 +83,11 @@ test('fill editing client and update successfully', async () => {
     'inactive',
   );
   await user.click(
-    screen.getByRole('button', { name: /update client/i }),
+    screen.getByRole('button', { name: /update contact/i }),
   );
-  expect(onUpdateClient).toHaveBeenCalledTimes(1);
-  expect(onCreateClient).not.toHaveBeenCalled();
-  expect(onUpdateClient).toHaveBeenCalledWith(
+  expect(onUpdateContact).toHaveBeenCalledTimes(1);
+  expect(onCreateContact).not.toHaveBeenCalled();
+  expect(onUpdateContact).toHaveBeenCalledWith(
     expect.objectContaining({
       name: 'Maria',
       company: 'Aegean Digital',
@@ -96,12 +96,12 @@ test('fill editing client and update successfully', async () => {
     }),
   );
 });
-test('editing client filled and cancel reset form and change nothing', async () => {
+test('editing contact filled and cancel reset form and change nothing', async () => {
   const user = userEvent.setup();
-  const onCreateClient = vi.fn();
-  const onUpdateClient = vi.fn();
+  const onCreateContact = vi.fn();
+  const onUpdateContact = vi.fn();
   const onCancelEdit = vi.fn();
-  const client = {
+  const contact = {
     id: 1,
     name: 'Maria',
     company: 'Aegean Digital',
@@ -109,13 +109,13 @@ test('editing client filled and cancel reset form and change nothing', async () 
     status: 'lead',
     notes: [],
   };
-  const originalClient = structuredClone(client);
+  const originalContact = structuredClone(contact);
   render(
-    <ClientForm
-      onCreateClient={onCreateClient}
-      onUpdateClient={onUpdateClient}
+    <ContactForm
+      onCreateContact={onCreateContact}
+      onUpdateContact={onUpdateContact}
       onCancelEdit={onCancelEdit}
-      editingClient={client}
+      editingContact={contact}
     />,
   );
   await user.selectOptions(
@@ -123,28 +123,28 @@ test('editing client filled and cancel reset form and change nothing', async () 
     'inactive',
   );
   await user.click(screen.getByRole('button', { name: /cancel/i }));
-  expect(onUpdateClient).not.toHaveBeenCalled();
-  expect(onCreateClient).not.toHaveBeenCalled();
+  expect(onUpdateContact).not.toHaveBeenCalled();
+  expect(onCreateContact).not.toHaveBeenCalled();
   expect(onCancelEdit).toHaveBeenCalledTimes(1);
   expect(screen.getByLabelText(/name/i)).toHaveValue('');
   expect(screen.getByLabelText(/company/i)).toHaveValue('');
   expect(screen.getByLabelText(/e-mail/i)).toHaveValue('');
   expect(screen.getByLabelText(/status/i)).toHaveValue('active');
-  expect(client).toEqual(originalClient);
+  expect(contact).toEqual(originalContact);
 });
-test('shows invalid email error and does not create client', async () => {
+test('shows invalid email error and does not create contact', async () => {
   const user = userEvent.setup();
 
-  const onCreateClient = vi.fn();
-  const onUpdateClient = vi.fn();
+  const onCreateContact = vi.fn();
+  const onUpdateContact = vi.fn();
   const onCancelEdit = vi.fn();
 
   render(
-    <ClientForm
-      onCreateClient={onCreateClient}
-      onUpdateClient={onUpdateClient}
+    <ContactForm
+      onCreateContact={onCreateContact}
+      onUpdateContact={onUpdateContact}
       onCancelEdit={onCancelEdit}
-      editingClient={null}
+      editingContact={null}
     />,
   );
 
@@ -159,13 +159,13 @@ test('shows invalid email error and does not create client', async () => {
   );
 
   await user.click(
-    screen.getByRole('button', { name: /create client/i }),
+    screen.getByRole('button', { name: /create contact/i }),
   );
 
   expect(
     screen.getByText(/enter a valid email/i),
   ).toBeInTheDocument();
 
-  expect(onCreateClient).not.toHaveBeenCalled();
-  expect(onUpdateClient).not.toHaveBeenCalled();
+  expect(onCreateContact).not.toHaveBeenCalled();
+  expect(onUpdateContact).not.toHaveBeenCalled();
 });

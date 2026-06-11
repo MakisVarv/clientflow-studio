@@ -1,18 +1,18 @@
 import { useState } from 'react';
 
-export default function ClientDetails({
-  client,
-  onDeleteClient,
-  onEditClient,
+export default function ContactDetails({
+  contact,
+  onDeleteContact,
+  onEditContact,
   onAddNote,
   onDeleteNote,
 }) {
   const [noteText, setNoteText] = useState('');
-  if (!client) {
+  if (!contact) {
     return (
       <section>
-        <h2>Client Details</h2>
-        <p>Select a client to view details.</p>
+        <h2>Contact Details</h2>
+        <p>Select a contact to view details.</p>
       </section>
     );
   }
@@ -23,19 +23,19 @@ export default function ClientDetails({
       return;
     }
 
-    onAddNote(client.id, noteText.trim());
+    onAddNote(contact.id, noteText.trim());
     setNoteText('');
   }
   return (
-    <section className="client-details">
-      <h2>Client Details</h2>
+    <section className="contact-details">
+      <h2>Contact Details</h2>
 
-      <h3>{client.name}</h3>
-      <p>{client.company}</p>
-      <p>{client.email}</p>
-      <p>{client.status}</p>
-      <button onClick={() => onEditClient(client.id)}>Edit</button>
-      <button onClick={() => onDeleteClient(client.id)}>
+      <h3>{contact.name}</h3>
+      <p>{contact.company}</p>
+      <p>{contact.email}</p>
+      <p>{contact.status}</p>
+      <button onClick={() => onEditContact(contact.id)}>Edit</button>
+      <button onClick={() => onDeleteContact(contact.id)}>
         Delete
       </button>
       <form onSubmit={handleSubmitNote}>
@@ -48,11 +48,11 @@ export default function ClientDetails({
       </form>
       <h4>Notes</h4>
 
-      {(!client.notes || client.notes.length === 0) && (
+      {(!contact.notes || contact.notes.length === 0) && (
         <p>No notes yet.</p>
       )}
 
-      {client.notes?.map((note) => {
+      {contact.notes?.map((note) => {
         const formattedDate = note.createdAt
           ? new Intl.DateTimeFormat('en-GB', {
               dateStyle: 'medium',
@@ -64,7 +64,7 @@ export default function ClientDetails({
           <div key={note.id} className="note-item">
             <p>{note.text}</p>
             <small>Added: {formattedDate}</small>
-            <button onClick={() => onDeleteNote(client.id, note.id)}>
+            <button onClick={() => onDeleteNote(contact.id, note.id)}>
               Delete Note
             </button>
           </div>

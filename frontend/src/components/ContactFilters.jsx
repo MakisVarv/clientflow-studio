@@ -1,4 +1,4 @@
-export default function ClientFilters({
+export default function ContactFilters({
   term,
   statusFilter,
   statuses,

@@ -18,9 +18,9 @@
   gap: 16px;
 }
 
-.client-list,
-.client-details,
-.client-form,
+.contact-list,
+.contact-details,
+.contact-form,
 .filters {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -28,7 +28,7 @@
   background: white;
 }
 
-.client-card {
+.contact-card {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 12px;
@@ -36,7 +36,7 @@
   cursor: pointer;
 }
 
-.client-card.selected {
+.contact-card.selected {
   border-color: blue;
 }
 
