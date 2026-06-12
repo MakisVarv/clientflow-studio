@@ -139,7 +139,7 @@ export default function ContactPage() {
   return (
     <div className="app">
       <h1 className="text-3xl font-bold text-slate-900">
-        ContactFlow
+        ClientFlow
       </h1>
       <ContactFilters
         term={term}
