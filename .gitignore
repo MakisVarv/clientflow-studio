@@ -28,6 +28,7 @@ backend/htmlcov/
 backend/.coverage
 backend/coverage.xml
 backend/instance/
+backend/migrations
 
 # ========================
 # Environment variables
