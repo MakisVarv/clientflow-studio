@@ -4,6 +4,7 @@ from flask import Flask
 
 from app.config.config import get_config
 from app.common import health_bp
+from app.core import db, migrate, jwt, ma, swagger
 
 
 def create_app() -> Flask:
@@ -14,12 +15,10 @@ def create_app() -> Flask:
 
     app.config.from_object(get_config(config_name))
 
-    @app.get("/")
-    def index():
-        return {
-            "application": app.config["APP_NAME"],
-            "version": app.config["APP_VERSION"],
-            "status": "running",
-        }
-
+    db.init_app(app)
+    migrate.init_app(app, db)
+    jwt.init_app(app)
+    ma.init_app(app)
+    swagger.init_app(app)
+    app.register_blueprint(health_bp)
     return app

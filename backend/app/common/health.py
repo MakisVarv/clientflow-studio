@@ -1,9 +1,6 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, current_app, jsonify
 
-health_bp = Blueprint(
-    "health",
-    __name__,
-)
+health_bp = Blueprint("health", __name__)
 
 
 @health_bp.get("/health")
@@ -13,7 +10,7 @@ def health():
     return jsonify(
         {
             "status": "ok",
-            "application": "ClientFlow CRM",
-            "version": "1.0.0",
+            "application": current_app.config["APP_NAME"],
+            "version": current_app.config["APP_VERSION"],
         }
     )
