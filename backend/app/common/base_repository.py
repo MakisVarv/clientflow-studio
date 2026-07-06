@@ -1,8 +1,11 @@
 from typing import Generic, TypeVar
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-ModelType = TypeVar("ModelType")
+from app.database.baseModel import BaseModel
+
+ModelType = TypeVar("ModelType", bound=BaseModel)
 
 
 class BaseRepository(Generic[ModelType]):
@@ -12,6 +15,10 @@ class BaseRepository(Generic[ModelType]):
         self.db = db
         self.model = model
 
+    def get_all(self):
+        stmt = select(self.model)
+        return self.db.execute(stmt).scalars().all()
+
     def add(self, entity: ModelType) -> ModelType:
         self.db.add(entity)
         self.db.commit()
@@ -19,7 +26,8 @@ class BaseRepository(Generic[ModelType]):
         return entity
 
     def get_by_id(self, entity_id):
-        return self.db.get(self.model, entity_id)
+        stmt = select(self.model).where(self.model.id == entity_id)
+        return self.db.execute(stmt).scalar_one_or_none()
 
     def delete(self, entity: ModelType) -> None:
         self.db.delete(entity)
