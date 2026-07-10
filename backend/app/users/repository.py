@@ -15,4 +15,4 @@ class UserRepository(BaseRepository[User]):
         return self.db.execute(stmt).scalar_one_or_none()
 
     def email_exists(self, email: str) -> bool:
-        return self.get_by_email(email) is not None
+        return self.get_by_email(email)

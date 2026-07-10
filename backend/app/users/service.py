@@ -40,3 +40,45 @@ class UserService:
         Return all users.
         """
         return self.repository.get_all()
+
+    def get_user(self, user_id):
+        """
+        Return a single user by id.
+        """
+
+        user = self.repository.get_by_id(user_id)
+
+        if user is None:
+            raise ValueError("User not found.")
+
+        return user
+
+    def update_user(
+        self,
+        user_id,
+        first_name,
+        last_name,
+        email,
+        phone,
+    ):
+        """
+        Update an existing user.
+        """
+
+        user = self.get_user(user_id)
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.phone = phone
+
+        return self.repository.update(user)
+
+    def delete_user(self, user_id) -> None:
+        """
+        Delete an existing user.
+        """
+
+        user = self.get_user(user_id)
+
+        self.repository.delete(user)
