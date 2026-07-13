@@ -38,9 +38,17 @@ def me():
 @jwt_required()
 @user_bp.get("/")
 def get_users():
+
+    page = int(request.args.get("page", 1))
+
+    size = int(request.args.get("size", 10))
+
     service = get_user_service()
 
-    users = service.get_users()
+    users = service.get_users(
+        page=page,
+        size=size,
+    )
 
     return jsonify(users_schema.dump(users))
 

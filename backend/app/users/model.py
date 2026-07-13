@@ -1,5 +1,8 @@
+import uuid
 from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 from app.database.baseModel import BaseModel
 
@@ -46,4 +49,14 @@ class User(BaseModel):
         Boolean,
         default=False,
         nullable=False,
+    )
+
+    role_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("roles.id"),
+        nullable=True,
+    )
+
+    role = relationship(
+        "Role",
+        back_populates="users",
     )

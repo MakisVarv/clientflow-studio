@@ -1,4 +1,5 @@
 from marshmallow import Schema, fields
+from app.roles.schema import RoleSchema
 
 
 class UserSchema(Schema):
@@ -15,6 +16,8 @@ class UserSchema(Schema):
     phone = fields.String(allow_none=True)
 
     is_active = fields.Boolean()
+
+    role = fields.Nested(RoleSchema)
 
 
 user_schema = UserSchema()

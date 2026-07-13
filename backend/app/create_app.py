@@ -6,6 +6,7 @@ from app.config.config import get_config
 from app.common import health_bp
 from app.core import db, migrate, jwt, ma, swagger
 from app.users.routes import user_bp
+from app.roles.routes import role_bp
 from app.auth.routes import auth_bp
 from app.common.exceptions import register_error_handlers
 
@@ -16,6 +17,7 @@ def create_app() -> Flask:
     app.register_blueprint(health_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(role_bp)
 
     register_error_handlers(app)
 

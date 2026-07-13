@@ -35,11 +35,15 @@ class UserService:
 
         return self.repository.add(user)
 
-    def get_users(self) -> Sequence[User]:
-        """
-        Return all users.
-        """
-        return self.repository.get_all()
+    def get_users(
+        self,
+        page: int,
+        size: int,
+    ):
+        return self.repository.get_all(
+            page,
+            size,
+        )
 
     def get_user(self, user_id):
         """
