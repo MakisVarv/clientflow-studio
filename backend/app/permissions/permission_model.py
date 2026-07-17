@@ -1,20 +1,20 @@
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 from app.database.baseModel import BaseModel
 from app.permissions.association import role_permissions
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.permissions.permission_model import Permission
+    from app.roles.model import Role
 
 
-class Role(BaseModel):
-
-    __tablename__ = "roles"
+class Permission(BaseModel):
+    __tablename__ = "permissions"
 
     name: Mapped[str] = mapped_column(
-        String(50),
+        String(100),
         unique=True,
         nullable=False,
     )
@@ -24,11 +24,7 @@ class Role(BaseModel):
         nullable=True,
     )
 
-    users = relationship(
-        "User",
-        back_populates="role",
-    )
-    permissions: Mapped[list["Permission"]] = relationship(
+    roles: Mapped[list["Role"]] = relationship(
         secondary=role_permissions,
-        back_populates="roles",
+        back_populates="permissions",
     )

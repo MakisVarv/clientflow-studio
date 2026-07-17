@@ -42,12 +42,20 @@ def get_users():
     page = int(request.args.get("page", 1))
 
     size = int(request.args.get("size", 10))
+    sort = request.args.get("sort", "first_name")
+    search = request.args.get("search")
+    active = request.args.get("active")
+    email = request.args.get("email")
 
     service = get_user_service()
 
     users = service.get_users(
         page=page,
         size=size,
+        sort=sort,
+        search=search,
+        active=active,
+        email=email,
     )
 
     return jsonify(users_schema.dump(users))

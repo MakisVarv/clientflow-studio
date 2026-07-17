@@ -9,6 +9,9 @@ from app.users.routes import user_bp
 from app.roles.routes import role_bp
 from app.auth.routes import auth_bp
 from app.common.exceptions import register_error_handlers
+from app.permissions.routes import permission_bp
+from app.core import db
+from app.seeds.permission_seed import seed_permissions
 
 
 def create_app() -> Flask:
@@ -18,6 +21,7 @@ def create_app() -> Flask:
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(role_bp)
+    app.register_blueprint(permission_bp)
 
     register_error_handlers(app)
 
@@ -32,5 +36,7 @@ def create_app() -> Flask:
     swagger.init_app(app)
     register_error_handlers(app)
     jwt.init_app(app)
+    with app.app_context():
+        seed_permissions(db.session)
 
     return app

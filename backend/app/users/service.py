@@ -39,10 +39,13 @@ class UserService:
         self,
         page: int,
         size: int,
+        sort: str,
+        search: str | None = None,
+        active: bool | None = None,
+        email: str | None = None,
     ):
         return self.repository.get_all(
-            page,
-            size,
+            page=page, size=size, sort=sort, search=search, active=active, email=email
         )
 
     def get_user(self, user_id):
