@@ -1,6 +1,11 @@
+# type: ignore
 from flask import Blueprint
 from flask import jsonify
 from flask import request
+from flask_jwt_extended import jwt_required
+from app.users.schema import assign_role_schema, user_schema
+from app.users.routes import user_bp
+
 
 from marshmallow import ValidationError
 
@@ -12,6 +17,7 @@ from app.permissions.schema import (
 )
 from app.permissions.service import PermissionService
 from app.core import db
+from app.common.factory import get_user_service
 
 permission_bp = Blueprint(
     "permissions",
@@ -71,3 +77,19 @@ def create_permission():
         permission_schema.dump(permission),
         201,
     )
+
+
+@jwt_required()
+@user_bp.put("/<user_id>/role")
+def assign_role(user_id):
+
+    data = assign_role_schema.load(request.get_json())
+
+    service = get_user_service()
+
+    user = service.assign_role(
+        user_id=user_id,
+        role_id=data["role_id"],
+    )
+
+    return jsonify(user_schema.dump(user)), 200

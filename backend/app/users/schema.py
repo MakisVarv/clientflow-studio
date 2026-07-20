@@ -59,4 +59,10 @@ class UpdateUserSchema(Schema):
     )
 
 
+class AssignRoleSchema(Schema):
+
+    role_id = fields.UUID(required=True)
+
+
+assign_role_schema = AssignRoleSchema()
 update_user_schema = UpdateUserSchema()

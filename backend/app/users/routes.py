@@ -1,5 +1,5 @@
+# type: ignore
 from flask import Blueprint, jsonify
-
 from app.database.session import get_db
 from app.users.repository import UserRepository
 from app.users.service import UserService
@@ -14,6 +14,8 @@ from app.users.schema import (
 from typing import Any
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
+
+from app.common.permissions import require_permission
 
 user_bp = Blueprint(
     "users",
@@ -35,8 +37,9 @@ def me():
     return jsonify(user_schema.dump(user))
 
 
-@jwt_required()
 @user_bp.get("/")
+@jwt_required()
+@require_permission("users.view")
 def get_users():
 
     page = int(request.args.get("page", 1))
@@ -64,7 +67,7 @@ def get_users():
 @user_bp.post("/")
 def create_user():
 
-    data: dict[str, Any] = create_user_schema.load(request.get_json())  # type: ignore
+    data: dict[str, Any] = create_user_schema.load(request.get_json())
 
     service = get_user_service()
 
@@ -129,3 +132,14 @@ def delete_user(user_id):
         jsonify({"message": "User deleted successfully."}),
         200,
     )
+
+
+@jwt_required()
+@user_bp.delete("/<user_id>/role")
+def remove_role(user_id):
+
+    service = get_user_service()
+
+    user = service.remove_role(user_id)
+
+    return jsonify(user_schema.dump(user)), 200

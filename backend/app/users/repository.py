@@ -5,6 +5,8 @@ from app.common.base_repository import BaseRepository
 from app.users.model import User
 from sqlalchemy import asc, desc
 
+from app.roles.model import Role
+
 
 class UserRepository(BaseRepository[User]):
 
@@ -16,7 +18,7 @@ class UserRepository(BaseRepository[User]):
         return self.db.execute(stmt).scalar_one_or_none()
 
     def email_exists(self, email: str) -> bool:
-        return self.get_by_email(email)
+        return self.get_by_email(email)  # type: ignore
 
     def get_all(self, page, size, sort, search=None, active=None, email=None):
 
@@ -54,6 +56,48 @@ class UserRepository(BaseRepository[User]):
 
     def get_by_id(self, user_id):
 
-        stmt = select(User).options(joinedload(User.role)).where(User.id == user_id)
+        stmt = (
+            select(User)
+            .options(joinedload(User.role).joinedload(Role.permissions))
+            .where(User.id == user_id)
+        )
 
         return self.db.execute(stmt).scalar_one_or_none()
+
+    def assign_role(
+        self,
+        user_id,
+        role_id,
+    ):
+
+        user = self.db.scalar(select(User).where(User.id == user_id))
+
+        if user is None:
+            return None
+
+        role = self.db.scalar(select(Role).where(Role.id == role_id))
+
+        if role is None:
+            return None
+
+        user.role = role
+
+        self.db.commit()
+
+        self.db.refresh(user)
+
+        return user
+
+    def remove_role(self, user_id):
+
+        user = self.get_by_id(user_id)
+
+        if user is None:
+            return None
+
+        user.role = None
+
+        self.db.commit()
+        self.db.refresh(user)
+
+        return user

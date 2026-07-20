@@ -1,4 +1,6 @@
+# type: ignore
 from flask import Blueprint, jsonify, request
+from marshmallow import ValidationError
 
 from app.common.factory import get_role_service
 from app.roles.schema import (
@@ -7,6 +9,7 @@ from app.roles.schema import (
     create_role_schema,
     update_role_schema,
 )
+from app.permissions.assignment_schema import assign_permissions_schema
 
 role_bp = Blueprint(
     "roles",
@@ -80,3 +83,23 @@ def delete_role(role_id):
         jsonify({"message": "Role deleted successfully."}),
         200,
     )
+
+
+@role_bp.post("/<role_id>/permissions")  # type: ignore
+def assign_permissions(role_id):
+    json_data = request.get_json()
+
+    try:
+        data = assign_permissions_schema.load(json_data)
+
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+
+    service = get_role_service()
+
+    role = service.assign_permissions(
+        role_id,
+        data["permission_ids"],  # type: ignore
+    )
+
+    return role_schema.dump(role), 200

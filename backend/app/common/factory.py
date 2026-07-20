@@ -5,16 +5,17 @@ from app.roles.repository import RoleRepository
 from app.roles.service import RoleService
 
 
-def get_user_service() -> UserService:
-    """
-    Create a UserService instance.
-    """
+def get_user_service():
 
     db = next(get_db())
 
-    repository = UserRepository(db)
+    user_repository = UserRepository(db)
+    role_repository = RoleRepository(db)
 
-    return UserService(repository)
+    return UserService(
+        user_repository,
+        role_repository,
+    )
 
 
 def get_role_service() -> RoleService:

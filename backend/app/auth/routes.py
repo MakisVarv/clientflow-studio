@@ -1,3 +1,4 @@
+# type: ignore
 from flask import Blueprint, jsonify, request
 
 from app.auth.schema import login_schema

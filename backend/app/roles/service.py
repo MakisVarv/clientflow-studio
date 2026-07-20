@@ -57,3 +57,19 @@ class RoleService:
         role = self.get_role(role_id)
 
         self.repository.delete(role)
+
+    def assign_permissions(
+        self,
+        role_id,
+        permission_ids,
+    ):
+
+        role = self.repository.get_by_id(role_id)
+
+        if role is None:
+            raise ValueError("Role not found.")
+
+        return self.repository.assign_permissions(
+            role_id,
+            permission_ids,
+        )
