@@ -8,10 +8,11 @@ from app.core import db, migrate, jwt, ma, swagger
 from app.users.routes import user_bp
 from app.roles.routes import role_bp
 from app.auth.routes import auth_bp
-from app.common.exceptions import register_error_handlers
+from app.common.error_handler import register_error_handlers
 from app.permissions.routes import permission_bp
 from app.core import db
 from app.seeds.permission_seed import seed_permissions
+from app.companies.routes import company_bp
 
 
 def create_app() -> Flask:
@@ -22,6 +23,7 @@ def create_app() -> Flask:
     app.register_blueprint(auth_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
+    app.register_blueprint(company_bp)
 
     register_error_handlers(app)
 
