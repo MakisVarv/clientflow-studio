@@ -50,3 +50,55 @@ class RoleRepository(BaseRepository[Role]):
         self.db.commit()
 
         return True
+
+    def add_permission(
+        self,
+        role_id,
+        permission_id,
+    ):
+
+        role = self.get_by_id(role_id)
+
+        if role is None:
+            return None
+
+        permission = self.db.scalar(
+            select(Permission).where(Permission.id == permission_id)
+        )
+
+        if permission is None:
+            return None
+
+        if permission not in role.permissions:
+            role.permissions.append(permission)
+
+        self.db.commit()
+        self.db.refresh(role)
+
+        return role
+
+    def remove_permission(
+        self,
+        role_id,
+        permission_id,
+    ):
+
+        role = self.get_by_id(role_id)
+
+        if role is None:
+            return None
+
+        permission = self.db.scalar(
+            select(Permission).where(Permission.id == permission_id)
+        )
+
+        if permission is None:
+            return None
+
+        if permission in role.permissions:
+            role.permissions.remove(permission)
+
+        self.db.commit()
+        self.db.refresh(role)
+
+        return role

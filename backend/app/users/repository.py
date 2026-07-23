@@ -62,7 +62,7 @@ class UserRepository(BaseRepository[User]):
             .where(User.id == user_id)
         )
 
-        return self.db.execute(stmt).scalar_one_or_none()
+        return self.db.execute(stmt).unique().scalar_one_or_none()
 
     def assign_role(
         self,

@@ -73,3 +73,25 @@ class RoleService:
             role_id,
             permission_ids,
         )
+
+    def add_permission(
+        self,
+        role_id,
+        permission_id,
+    ):
+
+        return self.repository.add_permission(
+            role_id,
+            permission_id,
+        )
+
+    def remove_permission(
+        self,
+        role_id,
+        permission_id,
+    ):
+
+        return self.repository.remove_permission(
+            role_id,
+            permission_id,
+        )

@@ -1,18 +1,25 @@
 # type: ignore
 import bcrypt
 from app.users.model import User
+from app.common.base_service import BaseService
 from app.users.repository import UserRepository
-from collections.abc import Sequence
 from app.roles.repository import RoleRepository
+from app.common.exceptions.bad_request import BadRequestException
 
 
-class UserService:
+class UserService(BaseService):
+
     def __init__(
         self,
-        user_repository: UserRepository,
-        role_repository: RoleRepository,
+        user_repository,
+        role_repository,
     ):
-        self.repository = user_repository
+
+        super().__init__(
+            repository=user_repository,
+            resource_name="User",
+        )
+
         self.role_repository = role_repository
 
     def register_user(
@@ -25,7 +32,7 @@ class UserService:
     ) -> User:
 
         if self.repository.email_exists(email):
-            raise ValueError("Email already exists.")
+            raise BadRequestException("Email already exists.")
 
         password_hash = bcrypt.hashpw(
             password.encode("utf-8"),
@@ -51,8 +58,14 @@ class UserService:
         active: bool | None = None,
         email: str | None = None,
     ):
+
         return self.repository.get_all(
-            page=page, size=size, sort=sort, search=search, active=active, email=email
+            page=page,
+            size=size,
+            sort=sort,
+            search=search,
+            active=active,
+            email=email,
         )
 
     def get_user(self, user_id):

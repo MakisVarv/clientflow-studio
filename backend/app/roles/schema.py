@@ -1,5 +1,7 @@
 from marshmallow import Schema, fields
 
+from app.permissions.schema import PermissionSchema
+
 
 class RoleSchema(Schema):
     """Role response schema."""
@@ -9,6 +11,10 @@ class RoleSchema(Schema):
     name = fields.String()
 
     description = fields.String(allow_none=True)
+    permissions = fields.Nested(
+        PermissionSchema,
+        many=True,
+    )
 
 
 role_schema = RoleSchema()
@@ -25,6 +31,7 @@ class CreateRoleSchema(Schema):
         allow_none=True,
     )
 
+
 create_role_schema = CreateRoleSchema()
 
 
@@ -35,4 +42,14 @@ class UpdateRoleSchema(Schema):
         required=False,
         allow_none=True,
     )
+
+
 update_role_schema = UpdateRoleSchema()
+
+
+class AddPermissionSchema(Schema):
+
+    permission_id = fields.UUID(required=True)
+
+
+add_permission_schema = AddPermissionSchema()
