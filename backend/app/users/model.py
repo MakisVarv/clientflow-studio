@@ -60,3 +60,9 @@ class User(BaseModel):
         "Role",
         back_populates="users",
     )
+
+    leads = relationship(
+        "Lead",
+        back_populates="users",
+        cascade="all, delete-orphan",
+    )
