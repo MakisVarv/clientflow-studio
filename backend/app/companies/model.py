@@ -12,6 +12,10 @@ from sqlalchemy.orm import (
 )
 
 from app.database.baseModel import BaseModel
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.contacts.model import Contact
 
 
 class Company(BaseModel):
@@ -74,17 +78,17 @@ class Company(BaseModel):
     )
 
     # Relationships
-    # contacts = relationship(
-    #     "Contact",
-    #     back_populates="company",
-    #     cascade="all, delete-orphan",
-    # )
+    contacts: Mapped[list["Contact"]] = relationship(
+        "Contact",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
 
-    # leads = relationship(
-    #     "Lead",
-    #     back_populates="company",
-    #     cascade="all, delete-orphan",
-    # )
+    leads = relationship(
+        "Lead",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
 
     # deals = relationship(
     #     "Deal",

@@ -1,3 +1,4 @@
+# type: ignore
 from app.common.base_service import BaseService
 from app.common.exceptions.bad_request import BadRequestException
 

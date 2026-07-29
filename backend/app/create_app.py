@@ -13,6 +13,7 @@ from app.permissions.routes import permission_bp
 from app.core import db
 from app.seeds.permission_seed import seed_permissions
 from app.companies.routes import company_bp
+from app.contacts.routes import contact_bp
 
 
 def create_app() -> Flask:
@@ -24,6 +25,7 @@ def create_app() -> Flask:
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
     app.register_blueprint(company_bp)
+    app.register_blueprint(contact_bp)
 
     register_error_handlers(app)
 
@@ -38,7 +40,5 @@ def create_app() -> Flask:
     swagger.init_app(app)
     register_error_handlers(app)
     jwt.init_app(app)
-    with app.app_context():
-        seed_permissions(db.session)
 
     return app
