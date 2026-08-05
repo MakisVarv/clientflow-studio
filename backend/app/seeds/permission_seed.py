@@ -23,6 +23,18 @@ DEFAULT_PERMISSIONS = [
     "contact.create",
     "contact.update",
     "contact.delete",
+    "lead.read",
+    "lead.create",
+    "lead.update",
+    "lead.delete",
+    "deal.read",
+    "deal.create",
+    "deal.update",
+    "deal.delete",
+    "activity.read",
+    "activity.create",
+    "activity.update",
+    "activity.delete",
 ]
 
 

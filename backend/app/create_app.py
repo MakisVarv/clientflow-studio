@@ -14,6 +14,9 @@ from app.core import db
 from app.seeds.permission_seed import seed_permissions
 from app.companies.routes import company_bp
 from app.contacts.routes import contact_bp
+from app.leads.routes import lead_bp
+from app.deals.routes import deal_bp
+from app.activities.routes import activity_bp
 
 
 def create_app() -> Flask:
@@ -26,6 +29,9 @@ def create_app() -> Flask:
     app.register_blueprint(permission_bp)
     app.register_blueprint(company_bp)
     app.register_blueprint(contact_bp)
+    app.register_blueprint(lead_bp)
+    app.register_blueprint(deal_bp)
+    app.register_blueprint(activity_bp)
 
     register_error_handlers(app)
 

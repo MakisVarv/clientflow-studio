@@ -90,8 +90,14 @@ class Company(BaseModel):
         cascade="all, delete-orphan",
     )
 
-    # deals = relationship(
-    #     "Deal",
-    #     back_populates="company",
-    #     cascade="all, delete-orphan",
-    # )
+    deals = relationship(
+        "Deal",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
+
+    activities = relationship(
+        "Activity",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )

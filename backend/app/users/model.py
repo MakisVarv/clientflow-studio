@@ -63,6 +63,16 @@ class User(BaseModel):
 
     leads = relationship(
         "Lead",
-        back_populates="users",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )
+    deals = relationship(
+        "Deal",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )
+    activities = relationship(
+        "Activity",
+        back_populates="owner",
         cascade="all, delete-orphan",
     )

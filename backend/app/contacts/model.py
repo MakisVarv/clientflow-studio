@@ -81,6 +81,12 @@ class Contact(BaseModel):
 
     leads = relationship(
         "Lead",
-        back_populates="contacts",
+        back_populates="contact",
+        cascade="all, delete-orphan",
+    )
+
+    activities = relationship(
+        "Activity",
+        back_populates="contact",
         cascade="all, delete-orphan",
     )
