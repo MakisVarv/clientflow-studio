@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from app.companies.model import Company
     from app.contacts.model import Contact
     from app.users.model import User
+    from app.deals.model import Deal
 
 
 class LeadStatus(str, Enum):
@@ -125,8 +126,19 @@ class Lead(BaseModel):
 
     contact: Mapped["Contact"] = relationship(
         "Contact",
+        back_populates="leads",
     )
 
     owner: Mapped["User"] = relationship(
         "User",
+        back_populates="leads",
+    )
+    deals: Mapped["Deal"] = relationship(
+        "Deal",
+        back_populates="lead",
+    )
+    activities = relationship(
+        "Activity",
+        back_populates="lead",
+        cascade="all, delete-orphan",
     )
