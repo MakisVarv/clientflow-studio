@@ -17,6 +17,9 @@ from app.contacts.routes import contact_bp
 from app.leads.routes import lead_bp
 from app.deals.routes import deal_bp
 from app.activities.routes import activity_bp
+from app.tasks.routes import task_bp
+from app.dashboard.routes import dashboard_bp
+from app.pipeline.routes import pipeline_bp
 
 
 def create_app() -> Flask:
@@ -32,6 +35,9 @@ def create_app() -> Flask:
     app.register_blueprint(lead_bp)
     app.register_blueprint(deal_bp)
     app.register_blueprint(activity_bp)
+    app.register_blueprint(task_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(pipeline_bp)
 
     register_error_handlers(app)
 

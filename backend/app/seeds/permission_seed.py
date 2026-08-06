@@ -35,6 +35,13 @@ DEFAULT_PERMISSIONS = [
     "activity.create",
     "activity.update",
     "activity.delete",
+    "task.read",
+    "task.create",
+    "task.update",
+    "task.delete",
+    "dashboard.read",
+    "pipeline.read",
+    "pipeline.update",
 ]
 
 
