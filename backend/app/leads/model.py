@@ -142,3 +142,8 @@ class Lead(BaseModel):
         back_populates="lead",
         cascade="all, delete-orphan",
     )
+    tasks = relationship(
+        "Task",
+        back_populates="lead",
+        cascade="all, delete-orphan",
+    )

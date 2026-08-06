@@ -101,3 +101,9 @@ class Company(BaseModel):
         back_populates="company",
         cascade="all, delete-orphan",
     )
+
+    tasks = relationship(
+        "Task",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )

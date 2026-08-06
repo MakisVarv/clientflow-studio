@@ -76,3 +76,13 @@ class User(BaseModel):
         back_populates="owner",
         cascade="all, delete-orphan",
     )
+    tasks = relationship(
+        "Task",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )
+    owned_tasks = relationship(
+        "Task",
+        foreign_keys="Task.owner_id",
+        back_populates="owner",
+    )

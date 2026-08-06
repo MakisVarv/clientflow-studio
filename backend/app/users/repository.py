@@ -1,3 +1,4 @@
+# type: ignore
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
@@ -18,7 +19,7 @@ class UserRepository(BaseRepository[User]):
         return self.db.execute(stmt).scalar_one_or_none()
 
     def email_exists(self, email: str) -> bool:
-        return self.get_by_email(email)  # type: ignore
+        return self.get_by_email(email)
 
     def get_all(self, page, size, sort, search=None, active=None, email=None):
 

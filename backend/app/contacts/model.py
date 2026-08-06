@@ -90,3 +90,9 @@ class Contact(BaseModel):
         back_populates="contact",
         cascade="all, delete-orphan",
     )
+
+    tasks = relationship(
+        "Task",
+        back_populates="contact",
+        cascade="all, delete-orphan",
+    )
