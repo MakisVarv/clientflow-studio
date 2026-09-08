@@ -86,3 +86,13 @@ class User(BaseModel):
         foreign_keys="Task.owner_id",
         back_populates="owner",
     )
+    notifications = relationship(
+        "Notification",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    calendar_events = relationship(
+        "CalendarEvent",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )

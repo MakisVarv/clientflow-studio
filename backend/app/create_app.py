@@ -20,6 +20,8 @@ from app.activities.routes import activity_bp
 from app.tasks.routes import task_bp
 from app.dashboard.routes import dashboard_bp
 from app.pipeline.routes import pipeline_bp
+from app.notifications.routes import notification_bp
+from app.calendar.routes import calendar_bp
 
 
 def create_app() -> Flask:
@@ -38,6 +40,8 @@ def create_app() -> Flask:
     app.register_blueprint(task_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(pipeline_bp)
+    app.register_blueprint(notification_bp)
+    app.register_blueprint(calendar_bp)
 
     register_error_handlers(app)
 
