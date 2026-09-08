@@ -100,3 +100,9 @@ class Deal(BaseModel):
         back_populates="deal",
         cascade="all, delete-orphan",
     )
+
+    calendar_events = relationship(
+        "CalendarEvent",
+        back_populates="deal",
+        cascade="all, delete-orphan",
+    )

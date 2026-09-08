@@ -147,3 +147,8 @@ class Lead(BaseModel):
         back_populates="lead",
         cascade="all, delete-orphan",
     )
+    calendar_events = relationship(
+        "CalendarEvent",
+        back_populates="lead",
+        cascade="all, delete-orphan",
+    )

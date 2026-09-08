@@ -96,3 +96,9 @@ class Contact(BaseModel):
         back_populates="contact",
         cascade="all, delete-orphan",
     )
+
+    calendar_events = relationship(
+        "CalendarEvent",
+        back_populates="contact",
+        cascade="all, delete-orphan",
+    )

@@ -107,3 +107,8 @@ class Company(BaseModel):
         back_populates="company",
         cascade="all, delete-orphan",
     )
+    calendar_events = relationship(
+        "CalendarEvent",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
