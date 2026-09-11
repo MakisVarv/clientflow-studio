@@ -85,7 +85,7 @@ def seed_calendar_events(db):
             end_datetime=end,
             location=choice(locations),
             is_all_day=False,
-            color=choice(colors),
+            # color=choice(colors),
             type=choice(list(CalendarEventType)),
             status=choice(list(CalendarEventStatus)),
             owner_id=choice(users).id,

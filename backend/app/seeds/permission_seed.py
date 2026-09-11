@@ -50,6 +50,7 @@ DEFAULT_PERMISSIONS = [
     "dashboard.read",
     "pipeline.read",
     "pipeline.update",
+    "reports.read",
 ]
 
 
