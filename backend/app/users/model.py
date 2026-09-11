@@ -96,3 +96,8 @@ class User(BaseModel):
         back_populates="owner",
         cascade="all, delete-orphan",
     )
+    notes = relationship(
+        "Note",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )

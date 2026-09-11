@@ -102,3 +102,8 @@ class Contact(BaseModel):
         back_populates="contact",
         cascade="all, delete-orphan",
     )
+    notes = relationship(
+        "Note",
+        back_populates="contact",
+        cascade="all, delete-orphan",
+    )

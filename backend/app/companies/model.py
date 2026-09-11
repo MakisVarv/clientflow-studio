@@ -112,3 +112,8 @@ class Company(BaseModel):
         back_populates="company",
         cascade="all, delete-orphan",
     )
+    notes = relationship(
+        "Note",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
