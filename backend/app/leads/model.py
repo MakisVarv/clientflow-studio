@@ -152,3 +152,8 @@ class Lead(BaseModel):
         back_populates="lead",
         cascade="all, delete-orphan",
     )
+    notes = relationship(
+        "Note",
+        back_populates="lead",
+        cascade="all, delete-orphan",
+    )
