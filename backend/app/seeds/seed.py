@@ -11,6 +11,7 @@ from app.seeds.activity_seed import seed_activities
 from app.seeds.task_seed import seed_tasks
 from app.seeds.notification_seed import seed_notifications
 from app.seeds.calendar_seed import seed_calendar_events
+from app.seeds.note_seed import seed_notes
 
 
 def run():
@@ -29,6 +30,8 @@ def run():
         seed_tasks(db)
         seed_notifications(db)
         seed_calendar_events(db)
+        seed_notes(db)
+
     finally:
         db.close()
 

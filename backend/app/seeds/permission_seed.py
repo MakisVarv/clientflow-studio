@@ -51,6 +51,11 @@ DEFAULT_PERMISSIONS = [
     "pipeline.read",
     "pipeline.update",
     "reports.read",
+    "search.read",
+    "note.read",
+    "note.create",
+    "note.update",
+    "note.delete",
 ]
 
 
