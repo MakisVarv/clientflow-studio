@@ -101,3 +101,8 @@ class User(BaseModel):
         back_populates="owner",
         cascade="all, delete-orphan",
     )
+    attachments = relationship(
+        "Attachment",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )

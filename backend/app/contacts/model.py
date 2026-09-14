@@ -107,3 +107,9 @@ class Contact(BaseModel):
         back_populates="contact",
         cascade="all, delete-orphan",
     )
+
+    attachments = relationship(
+        "Attachment",
+        back_populates="contact",
+        cascade="all, delete-orphan",
+    )

@@ -157,3 +157,8 @@ class Lead(BaseModel):
         back_populates="lead",
         cascade="all, delete-orphan",
     )
+    attachments = relationship(
+        "Attachment",
+        back_populates="lead",
+        cascade="all, delete-orphan",
+    )

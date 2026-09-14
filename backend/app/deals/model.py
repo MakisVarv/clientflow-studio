@@ -112,3 +112,9 @@ class Deal(BaseModel):
         back_populates="deal",
         cascade="all, delete-orphan",
     )
+
+    attachments = relationship(
+        "Attachment",
+        back_populates="deal",
+        cascade="all, delete-orphan",
+    )

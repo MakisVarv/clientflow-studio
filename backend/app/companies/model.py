@@ -117,3 +117,8 @@ class Company(BaseModel):
         back_populates="company",
         cascade="all, delete-orphan",
     )
+    attachments = relationship(
+        "Attachment",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )
