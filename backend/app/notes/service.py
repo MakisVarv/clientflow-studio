@@ -105,10 +105,16 @@ class NoteService:
 
             raise ValueError("A note must belong to a Company, Contact, Lead or Deal.")
 
-    def get_owner_notes(self, owner_id):
-
-        return self.repository.get_owner_notes(owner_id)
-
     def get_pinned_notes(self):
 
         return self.repository.get_pinned_notes()
+
+    def get_entity_notes(
+        self,
+        entity_type,
+        entity_id,
+        page=1,
+        size=20,
+    ):
+
+        return self.repository.get_entity_notes(entity_type, entity_id, page, size)

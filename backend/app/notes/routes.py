@@ -147,20 +147,6 @@ def lead_notes(lead_id):
     return jsonify(notes_schema.dump(notes))
 
 
-@notes_bp.get("/lead/<uuid:lead_id>")
-@jwt_required()
-@require_permission("notes.read")
-def lead_notes(lead_id):
-
-    db = next(get_db())
-
-    service = NoteService(NoteRepository(db))
-
-    notes = service.get_lead_notes(lead_id)
-
-    return jsonify(notes_schema.dump(notes))
-
-
 @notes_bp.get("/search")
 @jwt_required()
 @require_permission("notes.read")
@@ -251,3 +237,40 @@ def pinned_notes():
     notes = service.get_pinned_notes()
 
     return jsonify(notes_schema.dump(notes))
+
+
+@notes_bp.get("/entity")
+@jwt_required()
+@require_permission("notes.read")
+def entity_notes():
+
+    entity_type = request.args.get("type")
+
+    entity_id = request.args.get("id")
+
+    page = request.args.get(
+        "page",
+        default=1,
+        type=int,
+    )
+
+    size = request.args.get(
+        "size",
+        default=20,
+        type=int,
+    )
+
+    db = next(get_db())
+
+    service = NoteService(NoteRepository(db))
+
+    result = service.get_entity_notes(
+        entity_type=entity_type,
+        entity_id=entity_id,
+        page=page,
+        size=size,
+    )
+
+    result["items"] = notes_schema.dump(result["items"])
+
+    return jsonify(result)
