@@ -44,7 +44,6 @@ def seed_contacts(db):
                 mobile=fake.phone_number(),
                 position=choice(POSITIONS),
                 department="Sales",
-                notes=fake.sentence(),
                 is_primary=not primary_created,
                 is_active=True,
             )

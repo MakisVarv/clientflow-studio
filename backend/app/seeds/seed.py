@@ -12,6 +12,7 @@ from app.seeds.task_seed import seed_tasks
 from app.seeds.notification_seed import seed_notifications
 from app.seeds.calendar_seed import seed_calendar_events
 from app.seeds.note_seed import seed_notes
+from app.attachments.model import Attachment
 
 
 def run():

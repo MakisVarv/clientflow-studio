@@ -59,11 +59,6 @@ class Contact(BaseModel):
         nullable=True,
     )
 
-    notes: Mapped[str | None] = mapped_column(
-        String(1000),
-        nullable=True,
-    )
-
     is_primary: Mapped[bool] = mapped_column(
         Boolean,
         default=False,
