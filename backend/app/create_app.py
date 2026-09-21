@@ -11,7 +11,7 @@ from app.common.error_handler import register_error_handlers
 from app.companies.routes import company_bp
 from app.config.config import get_config
 from app.contacts.routes import contact_bp
-from app.core import db, jwt, ma, migrate, swagger
+from app.core.extensions import register_extensions
 from app.dashboard.routes import dashboard_bp
 from app.deals.routes import deal_bp
 from app.leads.routes import lead_bp
@@ -55,11 +55,6 @@ def create_app() -> Flask:
 
     app.config.from_object(get_config(config_name))
 
-    db.init_app(app)
-    migrate.init_app(app, db)
-    ma.init_app(app)
-    swagger.init_app(app)
-    register_error_handlers(app)
-    jwt.init_app(app)
+    register_extensions(app)
 
     return app

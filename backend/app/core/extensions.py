@@ -20,7 +20,7 @@ def register_extensions(app):
     db.init_app(app)
 
     migrate.init_app(app, db)
-
+    ma.init_app(app)
     jwt.init_app(app)
 
     swagger.init_app(app)
