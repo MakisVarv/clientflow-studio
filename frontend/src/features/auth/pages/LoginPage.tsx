@@ -97,14 +97,13 @@ function LoginPage() {
               {...register('password')}
               placeholder="Enter your password"
               className="
-                                w-full rounded-lg
-                                border border-slate-300
-                                px-4 py-3
-                                outline-none
-                                focus:border-blue-500
-                                focus:ring-2
-                                focus:ring-blue-100
-                            "
+                      w-full rounded-lg
+                      border border-slate-300
+                      px-4 py-3
+                      outline-none
+                      focus:border-blue-500
+                      focus:ring-2
+                      focus:ring-blue-100"
             />
 
             {errors.password && (
@@ -117,12 +116,12 @@ function LoginPage() {
           <button
             type="submit"
             className="
-                            w-full rounded-lg
-                            bg-blue-600
-                            px-4 py-3
-                            font-medium text-white
-                            hover:bg-blue-700
-                        "
+                      w-full rounded-lg
+                      bg-blue-600
+                      px-4 py-3
+                      font-medium text-white
+                      hover:bg-blue-700
+                  "
           >
             Sign In
           </button>
