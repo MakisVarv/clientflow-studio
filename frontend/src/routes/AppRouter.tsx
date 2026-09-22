@@ -18,32 +18,48 @@ import PipelinePage from '../features/pipelines/pages/PipelinePage';
 import NotificationsPage from '../features/notifications/pages/NotificationsPage';
 import UsersPage from '../features/users/pages/UsersPage';
 import RolesPage from '../features/roles/pages/RolesPage';
+import ProtectedRoute from './ProtectedRoute';
+import CreateCompanyPage from '../features/companies/pages/CreateCompanyPage';
+import EditCompanyPage from '../features/companies/pages/EditCompanyPage';
 
 function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/companies" element={<CompaniesPage />} />
-          <Route path="/contacts" element={<ContactsPage />} />
-          <Route path="/leads" element={<LeadsPage />} />
-          <Route path="/deals" element={<DealsPage />} />
-          <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/activities" element={<ActivitiesPage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/notes" element={<NotesPage />} />
-          <Route path="/attachments" element={<AttachmentsPage />} />
-          <Route path="/reports" element={<ReportsPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/pipeline" element={<PipelinePage />} />
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/roles" element={<RolesPage />} />
-          <Route
-            path="/notifications"
-            element={<NotificationsPage />}
-          />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/companies" element={<CompaniesPage />} />
+            <Route
+              path="/companies/new"
+              element={<CreateCompanyPage />}
+            />
+            <Route
+              path="/companies/:id/edit"
+              element={<EditCompanyPage />}
+            />
+            <Route path="/contacts" element={<ContactsPage />} />
+            <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/deals" element={<DealsPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/activities" element={<ActivitiesPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/notes" element={<NotesPage />} />
+            <Route
+              path="/attachments"
+              element={<AttachmentsPage />}
+            />
+            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/pipeline" element={<PipelinePage />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/roles" element={<RolesPage />} />
+            <Route
+              path="/notifications"
+              element={<NotificationsPage />}
+            />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
