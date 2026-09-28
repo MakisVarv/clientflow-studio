@@ -9,12 +9,16 @@ export function useCompanies() {
     queryFn: companyService.getCompanies,
   });
 }
-export function useCompany(id: string) {
+function useCompany(id: string) {
   return useQuery({
     queryKey: ['companies', id],
 
     queryFn: () => companyService.getCompanyById(id),
 
     enabled: !!id,
+
+    retry: false,
   });
 }
+
+export default useCompany;
