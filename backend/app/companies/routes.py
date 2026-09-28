@@ -42,7 +42,7 @@ def get_companies():
     return jsonify(companies_schema.dump(companies))
 
 
-@company_bp.get("/<company_id>")
+@company_bp.get("/<uuid:company_id>")
 @jwt_required()
 @require_permission("company.read")
 def get_company(company_id):

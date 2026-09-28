@@ -7,9 +7,10 @@ from sqlalchemy import select
 class CompanyRepository(BaseRepository[Company]):
 
     def __init__(self, db):
+
         super().__init__(
-            db=db,
-            model=Company,
+            db,
+            Company,
         )
 
     def exists_by_vat(

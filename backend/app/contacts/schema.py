@@ -19,8 +19,6 @@ class CreateContactSchema(Schema):
 
     department = fields.String(allow_none=True)
 
-    notes = fields.String(allow_none=True)
-
     is_primary = fields.Boolean()
 
 
@@ -39,8 +37,6 @@ class UpdateContactSchema(Schema):
     position = fields.String(allow_none=True)
 
     department = fields.String(allow_none=True)
-
-    notes = fields.String(allow_none=True)
 
     is_primary = fields.Boolean()
 
@@ -66,8 +62,6 @@ class ContactSchema(Schema):
     position = fields.String()
 
     department = fields.String()
-
-    notes = fields.String()
 
     is_primary = fields.Boolean()
 
