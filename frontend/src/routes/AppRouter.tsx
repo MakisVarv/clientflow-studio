@@ -21,6 +21,8 @@ import RolesPage from '../features/roles/pages/RolesPage';
 import ProtectedRoute from './ProtectedRoute';
 import CreateCompanyPage from '../features/companies/pages/CreateCompanyPage';
 import EditCompanyPage from '../features/companies/pages/EditCompanyPage';
+import CreateContactPage from '../features/contacts/pages/CreateContactPage';
+import EditContactPage from '../features/contacts/pages/EditContactPage';
 
 function AppRouter() {
   return (
@@ -40,6 +42,8 @@ function AppRouter() {
               element={<EditCompanyPage />}
             />
             <Route path="/contacts" element={<ContactsPage />} />
+            <Route path="/contacts/new" element={<CreateContactPage/>} />
+            <Route path="/contacts/:id/edit" element={<EditContactPage />} />
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/deals" element={<DealsPage />} />
             <Route path="/tasks" element={<TasksPage />} />
