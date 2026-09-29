@@ -8,7 +8,7 @@ from app.database.session import get_db
 
 from app.contacts.repository import ContactRepository
 from app.contacts.service import ContactService
-
+from app.database.session import db_context
 from app.contacts.schema import (
     contact_schema,
     contacts_schema,
@@ -46,20 +46,20 @@ def get_contacts():
         type=str,
     )
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ContactService(ContactRepository(db))
+        service = ContactService(ContactRepository(db))
 
-    if search:
-        contacts = service.search_contacts(
-            page=page,
-            size=size,
-            search=search,
-        )
-    else:
-        contacts = service.get_all()
+        if search:
+            contacts = service.search_contacts(
+                page=page,
+                size=size,
+                search=search,
+            )
+        else:
+            contacts = service.get_all()
 
-    return jsonify(contacts_schema.dump(contacts))
+        return jsonify(contacts_schema.dump(contacts))
 
 
 @contact_bp.get("/<uuid:contact_id>")
@@ -67,13 +67,13 @@ def get_contacts():
 @require_permission("contact.read")
 def get_contact(contact_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ContactService(ContactRepository(db))
+        service = ContactService(ContactRepository(db))
 
-    contact = service.get_by_id(contact_id)
+        contact = service.get_by_id(contact_id)
 
-    return jsonify(contact_schema.dump(contact))
+        return jsonify(contact_schema.dump(contact))
 
 
 @contact_bp.get("/company/<uuid:company_id>")
@@ -81,13 +81,13 @@ def get_contact(contact_id):
 @require_permission("contact.read")
 def get_company_contacts(company_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ContactService(ContactRepository(db))
+        service = ContactService(ContactRepository(db))
 
-    contacts = service.get_company_contacts(company_id)
+        contacts = service.get_company_contacts(company_id)
 
-    return jsonify(contacts_schema.dump(contacts))
+        return jsonify(contacts_schema.dump(contacts))
 
 
 @contact_bp.post("")
@@ -97,16 +97,16 @@ def create_contact():
 
     data = create_contact_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ContactService(ContactRepository(db))
+        service = ContactService(ContactRepository(db))
 
-    contact = service.create_contact(**data)
+        contact = service.create_contact(**data)
 
-    return (
-        jsonify(contact_schema.dump(contact)),
-        201,
-    )
+        return (
+            jsonify(contact_schema.dump(contact)),
+            201,
+        )
 
 
 @contact_bp.put("/<uuid:contact_id>")
@@ -116,16 +116,16 @@ def update_contact(contact_id):
 
     data = update_contact_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ContactService(ContactRepository(db))
+        service = ContactService(ContactRepository(db))
 
-    contact = service.update_contact(
-        contact_id,
-        **data,
-    )
+        contact = service.update_contact(
+            contact_id,
+            **data,
+        )
 
-    return jsonify(contact_schema.dump(contact))
+        return jsonify(contact_schema.dump(contact))
 
 
 @contact_bp.delete("/<uuid:contact_id>")
@@ -133,13 +133,13 @@ def update_contact(contact_id):
 @require_permission("contact.delete")
 def delete_contact(contact_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ContactService(ContactRepository(db))
+        service = ContactService(ContactRepository(db))
 
-    service.delete(contact_id)
+        service.delete(contact_id)
 
-    return (
-        jsonify({"message": "Contact deleted successfully."}),
-        200,
-    )
+        return (
+            jsonify({"message": "Contact deleted successfully."}),
+            200,
+        )

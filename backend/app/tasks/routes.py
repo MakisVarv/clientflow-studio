@@ -1,22 +1,16 @@
 # type: ignore
-from flask import Blueprint
-from flask import jsonify
-from flask import request
-
-from flask_jwt_extended import jwt_required
-
 from app.common.permissions import require_permission
-from app.database.session import get_db
-
+from app.database.session import db_context
 from app.tasks.repository import TaskRepository
-from app.tasks.service import TaskService
-
 from app.tasks.schema import (
+    create_task_schema,
     task_schema,
     tasks_schema,
-    create_task_schema,
     update_task_schema,
 )
+from app.tasks.service import TaskService
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 
 task_bp = Blueprint(
     "tasks",
@@ -48,16 +42,16 @@ def get_tasks():
         type=str,
     )
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    if search:
-        tasks = service.search(search)
-    else:
-        tasks = service.get_all()
+        if search:
+            tasks = service.search(search)
+        else:
+            tasks = service.get_all()
 
-    return jsonify(tasks_schema.dump(tasks))
+        return jsonify(tasks_schema.dump(tasks))
 
 
 @task_bp.get("/<uuid:task_id>")
@@ -65,13 +59,13 @@ def get_tasks():
 @require_permission("task.read")
 def get_task(task_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    task = service.get_by_id(task_id)
+        task = service.get_by_id(task_id)
 
-    return jsonify(task_schema.dump(task))
+        return jsonify(task_schema.dump(task))
 
 
 @task_bp.post("")
@@ -81,16 +75,16 @@ def create_task():
 
     data = create_task_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    task = service.create_task(data)
+        task = service.create_task(data)
 
-    return (
-        jsonify(task_schema.dump(task)),
-        201,
-    )
+        return (
+            jsonify(task_schema.dump(task)),
+            201,
+        )
 
 
 @task_bp.put("/<uuid:task_id>")
@@ -100,16 +94,16 @@ def update_task(task_id):
 
     data = update_task_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    task = service.update_task(
-        task_id,
-        data,
-    )
+        task = service.update_task(
+            task_id,
+            data,
+        )
 
-    return jsonify(task_schema.dump(task))
+        return jsonify(task_schema.dump(task))
 
 
 @task_bp.delete("/<uuid:task_id>")
@@ -117,16 +111,16 @@ def update_task(task_id):
 @require_permission("task.delete")
 def delete_task(task_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    service.delete_task(task_id)
+        service.delete_task(task_id)
 
-    return (
-        jsonify({"message": "Task deleted successfully."}),
-        200,
-    )
+        return (
+            jsonify({"message": "Task deleted successfully."}),
+            200,
+        )
 
 
 @task_bp.get("/company/<uuid:company_id>")
@@ -134,13 +128,13 @@ def delete_task(task_id):
 @require_permission("task.read")
 def get_company_tasks(company_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    tasks = service.get_company_tasks(company_id)
+        tasks = service.get_company_tasks(company_id)
 
-    return jsonify(tasks_schema.dump(tasks))
+        return jsonify(tasks_schema.dump(tasks))
 
 
 @task_bp.get("/contact/<uuid:contact_id>")
@@ -148,13 +142,13 @@ def get_company_tasks(company_id):
 @require_permission("task.read")
 def get_contact_tasks(contact_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    tasks = service.get_contact_tasks(contact_id)
+        tasks = service.get_contact_tasks(contact_id)
 
-    return jsonify(tasks_schema.dump(tasks))
+        return jsonify(tasks_schema.dump(tasks))
 
 
 @task_bp.get("/lead/<uuid:lead_id>")
@@ -162,13 +156,13 @@ def get_contact_tasks(contact_id):
 @require_permission("task.read")
 def get_lead_tasks(lead_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    tasks = service.get_lead_tasks(lead_id)
+        tasks = service.get_lead_tasks(lead_id)
 
-    return jsonify(tasks_schema.dump(tasks))
+        return jsonify(tasks_schema.dump(tasks))
 
 
 @task_bp.get("/owner/<uuid:owner_id>")
@@ -176,13 +170,13 @@ def get_lead_tasks(lead_id):
 @require_permission("task.read")
 def get_owner_tasks(owner_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    tasks = service.get_owner_tasks(owner_id)
+        tasks = service.get_owner_tasks(owner_id)
 
-    return jsonify(tasks_schema.dump(tasks))
+        return jsonify(tasks_schema.dump(tasks))
 
 
 @task_bp.get("/assigned/<uuid:user_id>")
@@ -190,13 +184,13 @@ def get_owner_tasks(owner_id):
 @require_permission("task.read")
 def get_assigned_tasks(user_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    tasks = service.get_assigned_tasks(user_id)
+        tasks = service.get_assigned_tasks(user_id)
 
-    return jsonify(tasks_schema.dump(tasks))
+        return jsonify(tasks_schema.dump(tasks))
 
 
 @task_bp.get("/completed")
@@ -204,13 +198,13 @@ def get_assigned_tasks(user_id):
 @require_permission("task.read")
 def get_completed_tasks():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    tasks = service.get_completed()
+        tasks = service.get_completed()
 
-    return jsonify(tasks_schema.dump(tasks))
+        return jsonify(tasks_schema.dump(tasks))
 
 
 @task_bp.get("/pending")
@@ -218,10 +212,10 @@ def get_completed_tasks():
 @require_permission("task.read")
 def get_pending_tasks():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = TaskService(TaskRepository(db))
+        service = TaskService(TaskRepository(db))
 
-    tasks = service.get_pending()
+        tasks = service.get_pending()
 
-    return jsonify(tasks_schema.dump(tasks))
+        return jsonify(tasks_schema.dump(tasks))

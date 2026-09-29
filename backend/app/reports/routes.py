@@ -16,6 +16,7 @@ from app.reports.service import ReportsService
 from app.reports.exporters.pdf_exporter import PdfExporter
 from app.reports.exporters.excel_exporter import ExcelExporter
 from app.reports.exporters.csv_exporter import CsvExporter
+from app.database.session import db_context
 
 reports_bp = Blueprint(
     "reports",
@@ -29,11 +30,11 @@ reports_bp = Blueprint(
 @require_permission("reports.read")
 def dashboard_report():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ReportsService(ReportsRepository(db))
+        service = ReportsService(ReportsRepository(db))
 
-    return jsonify(service.dashboard_report())
+        return jsonify(service.dashboard_report())
 
 
 @reports_bp.get("/sales")
@@ -41,11 +42,11 @@ def dashboard_report():
 @require_permission("reports.read")
 def sales_report():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ReportsService(ReportsRepository(db))
+        service = ReportsService(ReportsRepository(db))
 
-    return jsonify(service.sales_report())
+        return jsonify(service.sales_report())
 
 
 @reports_bp.get("/lead-funnel")
@@ -53,11 +54,11 @@ def sales_report():
 @require_permission("reports.read")
 def lead_funnel():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ReportsService(ReportsRepository(db))
+        service = ReportsService(ReportsRepository(db))
 
-    return jsonify(service.lead_funnel_report())
+        return jsonify(service.lead_funnel_report())
 
 
 @reports_bp.get("/tasks")
@@ -65,11 +66,11 @@ def lead_funnel():
 @require_permission("reports.read")
 def task_report():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ReportsService(ReportsRepository(db))
+        service = ReportsService(ReportsRepository(db))
 
-    return jsonify(service.task_report())
+        return jsonify(service.task_report())
 
 
 @reports_bp.get("/full")
@@ -77,11 +78,11 @@ def task_report():
 @require_permission("reports.read")
 def full_report():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ReportsService(ReportsRepository(db))
+        service = ReportsService(ReportsRepository(db))
 
-    return jsonify(service.full_report())
+        return jsonify(service.full_report())
 
 
 @reports_bp.get("/sales/pdf")
@@ -89,23 +90,23 @@ def full_report():
 @require_permission("reports.read")
 def sales_pdf():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ReportsService(ReportsRepository(db))
+        service = ReportsService(ReportsRepository(db))
 
-    report = service.sales_report()
+        report = service.sales_report()
 
-    pdf = PdfExporter.export(
-        "Sales Report",
-        report["summary"],
-    )
+        pdf = PdfExporter.export(
+            "Sales Report",
+            report["summary"],
+        )
 
-    return send_file(
-        pdf,
-        download_name="Sales_Report.pdf",
-        as_attachment=True,
-        mimetype="application/pdf",
-    )
+        return send_file(
+            pdf,
+            download_name="Sales_Report.pdf",
+            as_attachment=True,
+            mimetype="application/pdf",
+        )
 
 
 @reports_bp.get("/sales/excel")
@@ -113,23 +114,23 @@ def sales_pdf():
 @require_permission("reports.read")
 def sales_excel():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ReportsService(ReportsRepository(db))
+        service = ReportsService(ReportsRepository(db))
 
-    report = service.sales_report()
+        report = service.sales_report()
 
-    excel = ExcelExporter.export(
-        "Sales Report",
-        report["summary"],
-    )
+        excel = ExcelExporter.export(
+            "Sales Report",
+            report["summary"],
+        )
 
-    return send_file(
-        excel,
-        download_name="Sales_Report.xlsx",
-        as_attachment=True,
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
+        return send_file(
+            excel,
+            download_name="Sales_Report.xlsx",
+            as_attachment=True,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
 
 
 @reports_bp.get("/sales/csv")
@@ -137,17 +138,17 @@ def sales_excel():
 @require_permission("reports.read")
 def sales_csv():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ReportsService(ReportsRepository(db))
+        service = ReportsService(ReportsRepository(db))
 
-    report = service.sales_report()
+        report = service.sales_report()
 
-    csv_file = CsvExporter.export(report["summary"])
+        csv_file = CsvExporter.export(report["summary"])
 
-    return send_file(
-        BytesIO(csv_file.getvalue().encode("utf-8")),
-        download_name="Sales_Report.csv",
-        as_attachment=True,
-        mimetype="text/csv",
-    )
+        return send_file(
+            BytesIO(csv_file.getvalue().encode("utf-8")),
+            download_name="Sales_Report.csv",
+            as_attachment=True,
+            mimetype="text/csv",
+        )

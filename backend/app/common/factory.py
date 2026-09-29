@@ -1,15 +1,15 @@
-from app.database.session import get_db
-from app.users.repository import UserRepository
-from app.users.service import UserService
+from sqlalchemy.orm import Session
+
 from app.roles.repository import RoleRepository
 from app.roles.service import RoleService
+from app.users.repository import UserRepository
+from app.users.service import UserService
 
 
-def get_user_service():
-
-    db = next(get_db())
+def get_user_service(db: Session) -> UserService:
 
     user_repository = UserRepository(db)
+
     role_repository = RoleRepository(db)
 
     return UserService(
@@ -18,12 +18,7 @@ def get_user_service():
     )
 
 
-def get_role_service() -> RoleService:
-    """
-    Create a UserService instance.
-    """
-
-    db = next(get_db())
+def get_role_service(db: Session) -> RoleService:
 
     repository = RoleRepository(db)
 

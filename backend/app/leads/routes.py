@@ -15,6 +15,7 @@ from app.leads.schema import (
     create_lead_schema,
     update_lead_schema,
 )
+from app.database.session import db_context
 
 lead_bp = Blueprint(
     "leads",
@@ -46,20 +47,20 @@ def get_leads():
         type=str,
     )
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = LeadService(LeadRepository(db))
+        service = LeadService(LeadRepository(db))
 
-    if search:
-        leads = service.search_leads(
-            page=page,
-            size=size,
-            search=search,
-        )
-    else:
-        leads = service.get_all()
+        if search:
+            leads = service.search_leads(
+                page=page,
+                size=size,
+                search=search,
+            )
+        else:
+            leads = service.get_all()
 
-    return jsonify(leads_schema.dump(leads))
+        return jsonify(leads_schema.dump(leads))
 
 
 @lead_bp.get("/<uuid:lead_id>")
@@ -67,13 +68,13 @@ def get_leads():
 @require_permission("lead.read")
 def get_lead(lead_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = LeadService(LeadRepository(db))
+        service = LeadService(LeadRepository(db))
 
-    lead = service.get_by_id(lead_id)
+        lead = service.get_by_id(lead_id)
 
-    return jsonify(lead_schema.dump(lead))
+        return jsonify(lead_schema.dump(lead))
 
 
 @lead_bp.get("/company/<uuid:company_id>")
@@ -81,13 +82,13 @@ def get_lead(lead_id):
 @require_permission("lead.read")
 def get_company_leads(company_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = LeadService(LeadRepository(db))
+        service = LeadService(LeadRepository(db))
 
-    leads = service.get_company_leads(company_id)
+        leads = service.get_company_leads(company_id)
 
-    return jsonify(leads_schema.dump(leads))
+        return jsonify(leads_schema.dump(leads))
 
 
 @lead_bp.post("")
@@ -97,16 +98,16 @@ def create_lead():
 
     data = create_lead_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = LeadService(LeadRepository(db))
+        service = LeadService(LeadRepository(db))
 
-    lead = service.create_lead(**data)
+        lead = service.create_lead(**data)
 
-    return (
-        jsonify(lead_schema.dump(lead)),
-        201,
-    )
+        return (
+            jsonify(lead_schema.dump(lead)),
+            201,
+        )
 
 
 @lead_bp.put("/<uuid:lead_id>")
@@ -116,16 +117,16 @@ def update_lead(lead_id):
 
     data = update_lead_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = LeadService(LeadRepository(db))
+        service = LeadService(LeadRepository(db))
 
-    lead = service.update_lead(
-        lead_id,
-        **data,
-    )
+        lead = service.update_lead(
+            lead_id,
+            **data,
+        )
 
-    return jsonify(lead_schema.dump(lead))
+        return jsonify(lead_schema.dump(lead))
 
 
 @lead_bp.delete("/<uuid:lead_id>")
@@ -133,13 +134,13 @@ def update_lead(lead_id):
 @require_permission("lead.delete")
 def delete_lead(lead_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = LeadService(LeadRepository(db))
+        service = LeadService(LeadRepository(db))
 
-    service.delete(lead_id)
+        service.delete(lead_id)
 
-    return (
-        jsonify({"message": "Lead deleted successfully."}),
-        200,
-    )
+        return (
+            jsonify({"message": "Lead deleted successfully."}),
+            200,
+        )

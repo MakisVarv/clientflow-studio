@@ -9,7 +9,7 @@ from app.database.session import get_db
 
 from app.notes.repository import NoteRepository
 from app.notes.service import NoteService
-
+from app.database.session import db_context
 
 from app.notes.schema import (
     note_schema,
@@ -30,13 +30,13 @@ notes_bp = Blueprint(
 @require_permission("notes.read")
 def get_notes():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    notes = service.get_all()
+        notes = service.get_all()
 
-    return jsonify(notes_schema.dump(notes))
+        return jsonify(notes_schema.dump(notes))
 
 
 @notes_bp.get("/<uuid:note_id>")
@@ -44,13 +44,13 @@ def get_notes():
 @require_permission("notes.read")
 def get_note(note_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    note = service.get_by_id(note_id)
+        note = service.get_by_id(note_id)
 
-    return jsonify(note_schema.dump(note))
+        return jsonify(note_schema.dump(note))
 
 
 @notes_bp.post("")
@@ -60,16 +60,16 @@ def create_note():
 
     data = create_note_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    note = service.create_note(data)
+        note = service.create_note(data)
 
-    return (
-        jsonify(note_schema.dump(note)),
-        201,
-    )
+        return (
+            jsonify(note_schema.dump(note)),
+            201,
+        )
 
 
 @notes_bp.put("/<uuid:note_id>")
@@ -79,16 +79,16 @@ def update_note(note_id):
 
     data = update_note_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    note = service.update_note(
-        note_id,
-        data,
-    )
+        note = service.update_note(
+            note_id,
+            data,
+        )
 
-    return jsonify(note_schema.dump(note))
+        return jsonify(note_schema.dump(note))
 
 
 @notes_bp.delete("/<uuid:note_id>")
@@ -96,13 +96,13 @@ def update_note(note_id):
 @require_permission("notes.delete")
 def delete_note(note_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    service.delete_note(note_id)
+        service.delete_note(note_id)
 
-    return jsonify({"message": "Note deleted successfully."})
+        return jsonify({"message": "Note deleted successfully."})
 
 
 @notes_bp.get("/company/<uuid:company_id>")
@@ -110,13 +110,13 @@ def delete_note(note_id):
 @require_permission("notes.read")
 def company_notes(company_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    notes = service.get_company_notes(company_id)
+        notes = service.get_company_notes(company_id)
 
-    return jsonify(notes_schema.dump(notes))
+        return jsonify(notes_schema.dump(notes))
 
 
 @notes_bp.get("/contact/<uuid:contact_id>")
@@ -124,13 +124,13 @@ def company_notes(company_id):
 @require_permission("notes.read")
 def contact_notes(contact_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    notes = service.get_contact_notes(contact_id)
+        notes = service.get_contact_notes(contact_id)
 
-    return jsonify(notes_schema.dump(notes))
+        return jsonify(notes_schema.dump(notes))
 
 
 @notes_bp.get("/lead/<uuid:lead_id>")
@@ -138,13 +138,13 @@ def contact_notes(contact_id):
 @require_permission("notes.read")
 def lead_notes(lead_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    notes = service.get_lead_notes(lead_id)
+        notes = service.get_lead_notes(lead_id)
 
-    return jsonify(notes_schema.dump(notes))
+        return jsonify(notes_schema.dump(notes))
 
 
 @notes_bp.get("/search")
@@ -154,13 +154,13 @@ def search_notes():
 
     search = request.args.get("q", "")
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    notes = service.search(search)
+        notes = service.search(search)
 
-    return jsonify(notes_schema.dump(notes))
+        return jsonify(notes_schema.dump(notes))
 
 
 @notes_bp.get("/recent")
@@ -174,13 +174,13 @@ def recent_notes():
         type=int,
     )
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    notes = service.get_recent_notes(limit)
+        notes = service.get_recent_notes(limit)
 
-    return jsonify(notes_schema.dump(notes))
+        return jsonify(notes_schema.dump(notes))
 
 
 @notes_bp.patch("/<uuid:note_id>/pin")
@@ -188,13 +188,13 @@ def recent_notes():
 @require_permission("notes.update")
 def pin_note(note_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    note = service.pin_note(note_id)
+        note = service.pin_note(note_id)
 
-    return jsonify(note_schema.dump(note))
+        return jsonify(note_schema.dump(note))
 
 
 @notes_bp.patch("/<uuid:note_id>/unpin")
@@ -202,13 +202,13 @@ def pin_note(note_id):
 @require_permission("notes.update")
 def unpin_note(note_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    note = service.unpin_note(note_id)
+        note = service.unpin_note(note_id)
 
-    return jsonify(note_schema.dump(note))
+        return jsonify(note_schema.dump(note))
 
 
 @notes_bp.get("/owner/<uuid:owner_id>")
@@ -216,13 +216,13 @@ def unpin_note(note_id):
 @require_permission("notes.read")
 def owner_notes(owner_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    notes = service.get_owner_notes(owner_id)
+        notes = service.get_owner_notes(owner_id)
 
-    return jsonify(notes_schema.dump(notes))
+        return jsonify(notes_schema.dump(notes))
 
 
 @notes_bp.get("/pinned")
@@ -230,13 +230,13 @@ def owner_notes(owner_id):
 @require_permission("notes.read")
 def pinned_notes():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    notes = service.get_pinned_notes()
+        notes = service.get_pinned_notes()
 
-    return jsonify(notes_schema.dump(notes))
+        return jsonify(notes_schema.dump(notes))
 
 
 @notes_bp.get("/entity")
@@ -260,17 +260,17 @@ def entity_notes():
         type=int,
     )
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = NoteService(NoteRepository(db))
+        service = NoteService(NoteRepository(db))
 
-    result = service.get_entity_notes(
-        entity_type=entity_type,
-        entity_id=entity_id,
-        page=page,
-        size=size,
-    )
+        result = service.get_entity_notes(
+            entity_type=entity_type,
+            entity_id=entity_id,
+            page=page,
+            size=size,
+        )
 
-    result["items"] = notes_schema.dump(result["items"])
+        result["items"] = notes_schema.dump(result["items"])
 
-    return jsonify(result)
+        return jsonify(result)

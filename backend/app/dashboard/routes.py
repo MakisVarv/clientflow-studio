@@ -1,14 +1,10 @@
-from flask import Blueprint
-from flask import jsonify
-
-from flask_jwt_extended import jwt_required
-
 from app.common.permissions import require_permission
-from app.database.session import get_db
-
 from app.dashboard.repository import DashboardRepository
-from app.dashboard.service import DashboardService
 from app.dashboard.schema import dashboard_schema
+from app.dashboard.service import DashboardService
+from app.database.session import db_context
+from flask import Blueprint, jsonify
+from flask_jwt_extended import jwt_required
 
 dashboard_bp = Blueprint(
     "dashboard",
@@ -22,12 +18,12 @@ dashboard_bp = Blueprint(
 @require_permission("dashboard.read")
 def get_dashboard():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    repository = DashboardRepository(db)
+        repository = DashboardRepository(db)
 
-    service = DashboardService(repository)
+        service = DashboardService(repository)
 
-    dashboard = service.get_dashboard()
+        dashboard = service.get_dashboard()
 
-    return jsonify(dashboard_schema.dump(dashboard))
+        return jsonify(dashboard_schema.dump(dashboard))

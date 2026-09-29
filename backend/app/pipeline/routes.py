@@ -13,6 +13,7 @@ from app.pipeline.schema import move_lead_schema
 
 from app.leads.schema import leads_schema
 from app.leads.schema import lead_schema
+from app.database.session import db_context
 
 pipeline_bp = Blueprint(
     "pipeline",
@@ -26,21 +27,21 @@ pipeline_bp = Blueprint(
 @require_permission("pipeline.read")
 def get_pipeline():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    repository = PipelineRepository(db)
+        repository = PipelineRepository(db)
 
-    service = PipelineService(repository)
+        service = PipelineService(repository)
 
-    pipeline = service.get_pipeline()
+        pipeline = service.get_pipeline()
 
-    result = {}
+        result = {}
 
-    for status, leads in pipeline.items():
+        for status, leads in pipeline.items():
 
-        result[status] = leads_schema.dump(leads)
+            result[status] = leads_schema.dump(leads)
 
-    return jsonify(result)
+        return jsonify(result)
 
 
 @pipeline_bp.patch("/<uuid:lead_id>")
@@ -50,15 +51,15 @@ def move_lead(lead_id):
 
     data = move_lead_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    repository = PipelineRepository(db)
+        repository = PipelineRepository(db)
 
-    service = PipelineService(repository)
+        service = PipelineService(repository)
 
-    lead = service.move_lead(
-        lead_id,
-        data["status"],
-    )
+        lead = service.move_lead(
+            lead_id,
+            data["status"],
+        )
 
-    return jsonify(lead_schema.dump(lead))
+        return jsonify(lead_schema.dump(lead))

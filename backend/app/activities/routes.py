@@ -1,22 +1,16 @@
 # type: ignore
-from flask import Blueprint
-from flask import jsonify
-from flask import request
-
-from flask_jwt_extended import jwt_required
-
-from app.common.permissions import require_permission
-from app.database.session import get_db
-
 from app.activities.repository import ActivityRepository
-from app.activities.service import ActivityService
-
 from app.activities.schema import (
-    activity_schema,
     activities_schema,
+    activity_schema,
     create_activity_schema,
     update_activity_schema,
 )
+from app.activities.service import ActivityService
+from app.common.permissions import require_permission
+from app.database.session import db_context
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 
 activity_bp = Blueprint(
     "activities",
@@ -48,16 +42,16 @@ def get_activities():
         type=str,
     )
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    if search:
-        activities = service.search(search)
-    else:
-        activities = service.get_all()
+        if search:
+            activities = service.search(search)
+        else:
+            activities = service.get_all()
 
-    return jsonify(activities_schema.dump(activities))
+        return jsonify(activities_schema.dump(activities))
 
 
 @activity_bp.get("/<uuid:activity_id>")
@@ -65,13 +59,13 @@ def get_activities():
 @require_permission("activity.read")
 def get_activity(activity_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    activity = service.get_by_id(activity_id)
+        activity = service.get_by_id(activity_id)
 
-    return jsonify(activity_schema.dump(activity))
+        return jsonify(activity_schema.dump(activity))
 
 
 @activity_bp.post("")
@@ -81,16 +75,16 @@ def create_activity():
 
     data = create_activity_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    activity = service.create_activity(data)
+        activity = service.create_activity(data)
 
-    return (
-        jsonify(activity_schema.dump(activity)),
-        201,
-    )
+        return (
+            jsonify(activity_schema.dump(activity)),
+            201,
+        )
 
 
 @activity_bp.put("/<uuid:activity_id>")
@@ -100,16 +94,16 @@ def update_activity(activity_id):
 
     data = update_activity_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    activity = service.update_activity(
-        activity_id,
-        data,
-    )
+        activity = service.update_activity(
+            activity_id,
+            data,
+        )
 
-    return jsonify(activity_schema.dump(activity))
+        return jsonify(activity_schema.dump(activity))
 
 
 @activity_bp.delete("/<uuid:activity_id>")
@@ -117,16 +111,16 @@ def update_activity(activity_id):
 @require_permission("activity.delete")
 def delete_activity(activity_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    service.delete_activity(activity_id)
+        service.delete_activity(activity_id)
 
-    return (
-        jsonify({"message": "Activity deleted successfully."}),
-        200,
-    )
+        return (
+            jsonify({"message": "Activity deleted successfully."}),
+            200,
+        )
 
 
 @activity_bp.get("/company/<uuid:company_id>")
@@ -134,13 +128,13 @@ def delete_activity(activity_id):
 @require_permission("activity.read")
 def get_company_activities(company_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    activities = service.get_company_activities(company_id)
+        activities = service.get_company_activities(company_id)
 
-    return jsonify(activities_schema.dump(activities))
+        return jsonify(activities_schema.dump(activities))
 
 
 @activity_bp.get("/contact/<uuid:contact_id>")
@@ -148,13 +142,13 @@ def get_company_activities(company_id):
 @require_permission("activity.read")
 def get_contact_activities(contact_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    activities = service.get_contact_activities(contact_id)
+        activities = service.get_contact_activities(contact_id)
 
-    return jsonify(activities_schema.dump(activities))
+        return jsonify(activities_schema.dump(activities))
 
 
 @activity_bp.get("/lead/<uuid:lead_id>")
@@ -162,13 +156,13 @@ def get_contact_activities(contact_id):
 @require_permission("activity.read")
 def get_lead_activities(lead_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    activities = service.get_lead_activities(lead_id)
+        activities = service.get_lead_activities(lead_id)
 
-    return jsonify(activities_schema.dump(activities))
+        return jsonify(activities_schema.dump(activities))
 
 
 @activity_bp.get("/deal/<uuid:deal_id>")
@@ -176,13 +170,13 @@ def get_lead_activities(lead_id):
 @require_permission("activity.read")
 def get_deal_activities(deal_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    activities = service.get_deal_activities(deal_id)
+        activities = service.get_deal_activities(deal_id)
 
-    return jsonify(activities_schema.dump(activities))
+        return jsonify(activities_schema.dump(activities))
 
 
 @activity_bp.get("/owner/<uuid:owner_id>")
@@ -190,10 +184,10 @@ def get_deal_activities(deal_id):
 @require_permission("activity.read")
 def get_owner_activities(owner_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = ActivityService(ActivityRepository(db))
+        service = ActivityService(ActivityRepository(db))
 
-    activities = service.get_owner_activities(owner_id)
+        activities = service.get_owner_activities(owner_id)
 
-    return jsonify(activities_schema.dump(activities))
+        return jsonify(activities_schema.dump(activities))

@@ -1,23 +1,16 @@
-from flask import Blueprint
-from flask import jsonify
-from flask import request
-
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from app.database.session import get_db
-
 from app.common.permissions import require_permission
-
 from app.companies.repository import CompanyRepository
-from app.companies.service import CompanyService
-
-
 from app.companies.schema import (
-    company_schema,
     companies_schema,
+    company_schema,
     create_company_schema,
     update_company_schema,
 )
+from app.companies.service import CompanyService
+from app.database.session import db_context
 
 company_bp = Blueprint(
     "companies",
@@ -31,15 +24,15 @@ company_bp = Blueprint(
 @require_permission("company.read")
 def get_companies():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    repository = CompanyRepository(db)
+        repository = CompanyRepository(db)
 
-    service = CompanyService(repository)
+        service = CompanyService(repository)
 
-    companies = service.get_companies()
+        companies = service.get_companies()
 
-    return jsonify(companies_schema.dump(companies))
+        return jsonify(companies_schema.dump(companies))
 
 
 @company_bp.get("/<uuid:company_id>")
@@ -47,15 +40,15 @@ def get_companies():
 @require_permission("company.read")
 def get_company(company_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    repository = CompanyRepository(db)
+        repository = CompanyRepository(db)
 
-    service = CompanyService(repository)
+        service = CompanyService(repository)
 
-    company = service.get_by_id(company_id)
+        company = service.get_by_id(company_id)
 
-    return jsonify(company_schema.dump(company))
+        return jsonify(company_schema.dump(company))
 
 
 @company_bp.post("")
@@ -65,18 +58,18 @@ def create_company():
 
     data = create_company_schema.load(request.json)
 
-    db = next(get_db())
+    with db_context() as db:
 
-    repository = CompanyRepository(db)
+        repository = CompanyRepository(db)
 
-    service = CompanyService(repository)
+        service = CompanyService(repository)
 
-    company = service.create_company(**data)
+        company = service.create_company(**data)
 
-    return (
-        jsonify(company_schema.dump(company)),
-        201,
-    )
+        return (
+            jsonify(company_schema.dump(company)),
+            201,
+        )
 
 
 @company_bp.put("/<uuid:company_id>")
@@ -86,18 +79,18 @@ def update_company(company_id):
 
     data = update_company_schema.load(request.json)
 
-    db = next(get_db())
+    with db_context() as db:
 
-    repository = CompanyRepository(db)
+        repository = CompanyRepository(db)
 
-    service = CompanyService(repository)
+        service = CompanyService(repository)
 
-    company = service.update_company(
-        company_id=company_id,
-        **data,
-    )
+        company = service.update_company(
+            company_id=company_id,
+            **data,
+        )
 
-    return jsonify(company_schema.dump(company))
+        return jsonify(company_schema.dump(company))
 
 
 @company_bp.delete("/<uuid:company_id>")
@@ -105,15 +98,15 @@ def update_company(company_id):
 @require_permission("company.delete")
 def delete_company(company_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    repository = CompanyRepository(db)
+        repository = CompanyRepository(db)
 
-    service = CompanyService(repository)
+        service = CompanyService(repository)
 
-    service.delete(company_id)
+        service.delete(company_id)
 
-    return (
-        jsonify({"message": "Company deleted successfully."}),
-        200,
-    )
+        return (
+            jsonify({"message": "Company deleted successfully."}),
+            200,
+        )

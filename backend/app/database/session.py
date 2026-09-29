@@ -1,4 +1,5 @@
 from collections.abc import Generator
+from contextlib import contextmanager
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -33,3 +34,17 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+
+@contextmanager
+def db_context():
+
+    db_generator = get_db()
+
+    db = next(db_generator)
+
+    try:
+        yield db
+
+    finally:
+        db_generator.close()

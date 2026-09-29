@@ -1,21 +1,15 @@
-from flask import Blueprint
-from flask import jsonify
-from flask import request
-
-from flask_jwt_extended import jwt_required
-
-from app.common.permissions import require_permission
-from app.database.session import get_db
-
 from app.calendar.repository import CalendarRepository
-from app.calendar.service import CalendarService
-
 from app.calendar.schema import (
     calendar_event_schema,
     calendar_events_schema,
     create_calendar_event_schema,
     update_calendar_event_schema,
 )
+from app.calendar.service import CalendarService
+from app.common.permissions import require_permission
+from app.database.session import db_context
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 
 calendar_bp = Blueprint(
     "calendar",
@@ -29,13 +23,13 @@ calendar_bp = Blueprint(
 @require_permission("calendar.read")
 def get_events():
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    events = service.get_all()
+        events = service.get_all()
 
-    return jsonify(calendar_events_schema.dump(events))
+        return jsonify(calendar_events_schema.dump(events))
 
 
 @calendar_bp.get("/<uuid:event_id>")
@@ -43,13 +37,13 @@ def get_events():
 @require_permission("calendar.read")
 def get_event(event_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    event = service.get_by_id(event_id)
+        event = service.get_by_id(event_id)
 
-    return jsonify(calendar_event_schema.dump(event))
+        return jsonify(calendar_event_schema.dump(event))
 
 
 @calendar_bp.post("")
@@ -59,16 +53,16 @@ def create_event():
 
     data = create_calendar_event_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    event = service.create_event(data)
+        event = service.create_event(data)
 
-    return (
-        jsonify(calendar_event_schema.dump(event)),
-        201,
-    )
+        return (
+            jsonify(calendar_event_schema.dump(event)),
+            201,
+        )
 
 
 @calendar_bp.put("/<uuid:event_id>")
@@ -78,16 +72,16 @@ def update_event(event_id):
 
     data = update_calendar_event_schema.load(request.get_json())
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    event = service.update_event(
-        event_id,
-        data,
-    )
+        event = service.update_event(
+            event_id,
+            data,
+        )
 
-    return jsonify(calendar_event_schema.dump(event))
+        return jsonify(calendar_event_schema.dump(event))
 
 
 @calendar_bp.delete("/<uuid:event_id>")
@@ -95,13 +89,13 @@ def update_event(event_id):
 @require_permission("calendar.delete")
 def delete_event(event_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    service.delete_event(event_id)
+        service.delete_event(event_id)
 
-    return jsonify({"message": "Calendar event deleted successfully."})
+        return jsonify({"message": "Calendar event deleted successfully."})
 
 
 @calendar_bp.get("/today/<uuid:owner_id>")
@@ -109,13 +103,13 @@ def delete_event(event_id):
 @require_permission("calendar.read")
 def today_events(owner_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    events = service.get_today_events(owner_id)
+        events = service.get_today_events(owner_id)
 
-    return jsonify(calendar_events_schema.dump(events))
+        return jsonify(calendar_events_schema.dump(events))
 
 
 @calendar_bp.get("/owner/<uuid:owner_id>")
@@ -123,13 +117,13 @@ def today_events(owner_id):
 @require_permission("calendar.read")
 def owner_events(owner_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    events = service.get_owner_events(owner_id)
+        events = service.get_owner_events(owner_id)
 
-    return jsonify(calendar_events_schema.dump(events))
+        return jsonify(calendar_events_schema.dump(events))
 
 
 @calendar_bp.get("/company/<uuid:company_id>")
@@ -137,13 +131,13 @@ def owner_events(owner_id):
 @require_permission("calendar.read")
 def company_events(company_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    events = service.get_company_events(company_id)
+        events = service.get_company_events(company_id)
 
-    return jsonify(calendar_events_schema.dump(events))
+        return jsonify(calendar_events_schema.dump(events))
 
 
 @calendar_bp.get("/contact/<uuid:contact_id>")
@@ -151,13 +145,13 @@ def company_events(company_id):
 @require_permission("calendar.read")
 def contact_events(contact_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    events = service.get_contact_events(contact_id)
+        events = service.get_contact_events(contact_id)
 
-    return jsonify(calendar_events_schema.dump(events))
+        return jsonify(calendar_events_schema.dump(events))
 
 
 @calendar_bp.get("/lead/<uuid:lead_id>")
@@ -165,13 +159,13 @@ def contact_events(contact_id):
 @require_permission("calendar.read")
 def lead_events(lead_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    events = service.get_lead_events(lead_id)
+        events = service.get_lead_events(lead_id)
 
-    return jsonify(calendar_events_schema.dump(events))
+        return jsonify(calendar_events_schema.dump(events))
 
 
 @calendar_bp.patch("/<uuid:event_id>/complete")
@@ -179,13 +173,13 @@ def lead_events(lead_id):
 @require_permission("calendar.update")
 def complete_event(event_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    event = service.complete_event(event_id)
+        event = service.complete_event(event_id)
 
-    return jsonify(calendar_event_schema.dump(event))
+        return jsonify(calendar_event_schema.dump(event))
 
 
 @calendar_bp.patch("/<uuid:event_id>/cancel")
@@ -193,10 +187,10 @@ def complete_event(event_id):
 @require_permission("calendar.update")
 def cancel_event(event_id):
 
-    db = next(get_db())
+    with db_context() as db:
 
-    service = CalendarService(CalendarRepository(db))
+        service = CalendarService(CalendarRepository(db))
 
-    event = service.cancel_event(event_id)
+        event = service.cancel_event(event_id)
 
-    return jsonify(calendar_event_schema.dump(event))
+        return jsonify(calendar_event_schema.dump(event))
