@@ -1,24 +1,29 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import companyService from '../services/companyService';
 
-export function useCompanies() {
-  return useQuery({
-    queryKey: ['companies'],
+import type { Company } from '../types/company.types';
 
-    queryFn: companyService.getCompanies,
-  });
-}
-function useCompany(id: string) {
-  return useQuery({
-    queryKey: ['companies', id],
+function useCompanies(): UseQueryResult<Company[], Error>;
 
-    queryFn: () => companyService.getCompanyById(id),
+function useCompanies(id: string): UseQueryResult<Company, Error>;
 
-    enabled: !!id,
+function useCompanies(
+  id?: string,
+): UseQueryResult<Company | Company[], Error> {
+  return useQuery<Company | Company[], Error>({
+    queryKey: id ? ['companies', id] : ['companies'],
+
+    queryFn: async () => {
+      if (id) {
+        return companyService.getCompanyById(id);
+      }
+
+      return companyService.getCompanies();
+    },
 
     retry: false,
   });
 }
 
-export default useCompany;
+export default useCompanies;

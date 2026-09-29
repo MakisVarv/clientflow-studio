@@ -66,6 +66,9 @@ function EditCompanyPage() {
   };
 
   function handleSubmit(data: CompanyFormData) {
+    if (!id) {
+      return;
+    }
     const payload: UpdateCompanyRequest = {
       name: data.name,
 

@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Save } from 'lucide-react';
 
-import { useCompanies } from '../../companies/hooks/useCompanies';
+import useCompanies from '../../companies/hooks/useCompanies';
 
 const contactSchema = z.object({
   company_id: z.string().min(1, 'Company is required'),

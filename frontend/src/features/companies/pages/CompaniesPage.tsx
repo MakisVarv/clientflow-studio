@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 
 import CompaniesTable from '../components/CompaniesTable';
-import { useCompanies } from '../hooks/useCompanies';
+import useCompanies from '../hooks/useCompanies';
 
 function CompaniesPage() {
   const navigate = useNavigate();
