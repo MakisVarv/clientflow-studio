@@ -23,6 +23,8 @@ import CreateCompanyPage from '../features/companies/pages/CreateCompanyPage';
 import EditCompanyPage from '../features/companies/pages/EditCompanyPage';
 import CreateContactPage from '../features/contacts/pages/CreateContactPage';
 import EditContactPage from '../features/contacts/pages/EditContactPage';
+import CreateLeadPage from '../features/leads/pages/CreateLeadPage';
+import EditLeadPage from '../features/leads/pages/EditLeadPage';
 
 function AppRouter() {
   return (
@@ -42,9 +44,20 @@ function AppRouter() {
               element={<EditCompanyPage />}
             />
             <Route path="/contacts" element={<ContactsPage />} />
-            <Route path="/contacts/new" element={<CreateContactPage/>} />
-            <Route path="/contacts/:id/edit" element={<EditContactPage />} />
+            <Route
+              path="/contacts/new"
+              element={<CreateContactPage />}
+            />
+            <Route
+              path="/contacts/:id/edit"
+              element={<EditContactPage />}
+            />
             <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/leads/new" element={<CreateLeadPage />} />
+            <Route
+              path="/leads/:id/edit"
+              element={<EditLeadPage />}
+            />
             <Route path="/deals" element={<DealsPage />} />
             <Route path="/tasks" element={<TasksPage />} />
             <Route path="/activities" element={<ActivitiesPage />} />
