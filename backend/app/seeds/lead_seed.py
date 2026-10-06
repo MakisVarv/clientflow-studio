@@ -36,7 +36,18 @@ def seed_leads(db):
 
         company = choice(companies)
 
-        contact = choice(contacts)
+        # Παίρνουμε ΜΟΝΟ contacts
+        # που ανήκουν στη συγκεκριμένη company
+        company_contacts = [
+            contact for contact in contacts if contact.company_id == company.id
+        ]
+
+        # Αν η εταιρεία δεν έχει contacts,
+        # επιλέγουμε άλλη επανάληψη
+        if not company_contacts:
+            continue
+
+        contact = choice(company_contacts)
 
         owner = choice(users)
 
