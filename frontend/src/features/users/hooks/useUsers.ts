@@ -1,0 +1,15 @@
+import { useQuery } from '@tanstack/react-query';
+
+import userService from '../services/userService';
+
+function useUsers() {
+  return useQuery({
+    queryKey: ['users'],
+
+    queryFn: userService.getUsers,
+
+    retry: false,
+  });
+}
+
+export default useUsers;
