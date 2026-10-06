@@ -11,6 +11,7 @@ import { Save } from 'lucide-react';
 import useCompanies from '../../companies/hooks/useCompanies';
 
 import useContacts from '../../contacts/hooks/useContacts';
+import useUsers from '../../users/hooks/useUsers';
 
 const leadSchema = z.object({
   company_id: z.string().min(1, 'Company is required'),
@@ -101,11 +102,14 @@ function LeadForm({
 
   const { data: contacts } = useContacts();
 
+  const { data: users } = useUsers();
+
   const {
     register,
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
@@ -120,11 +124,24 @@ function LeadForm({
     });
   }, [initialValues, reset]);
 
+  useEffect(() => {
+    if (initialValues?.company_id && companies?.length) {
+      setValue('company_id', initialValues.company_id);
+    }
+  }, [companies, initialValues?.company_id, setValue]);
+
+  useEffect(() => {
+    if (initialValues?.contact_id && contacts?.length) {
+      setValue('contact_id', initialValues.contact_id);
+    }
+  }, [contacts, initialValues?.contact_id, setValue]);
+
   const selectedCompanyId = watch('company_id');
 
   const filteredContacts =
     contacts?.filter(
-      (contact) => contact.company_id === selectedCompanyId,
+      (contact) =>
+        String(contact.company_id) === String(selectedCompanyId),
     ) ?? [];
 
   return (
@@ -193,15 +210,24 @@ function LeadForm({
 
         <div className="col-span-2">
           <label className="mb-2 block text-sm font-medium text-slate-700">
-            Owner ID *
+            Owner *
           </label>
 
-          <input
+          <select
             {...register('owner_id')}
             disabled={disableRelations}
-            placeholder="User UUID"
             className="w-full rounded-lg border border-slate-300 px-4 py-2 disabled:bg-slate-100"
-          />
+          >
+            <option value="">Select Owner</option>
+
+            {users?.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.first_name} {user.last_name}
+                {' - '}
+                {user.email}
+              </option>
+            ))}
+          </select>
 
           {errors.owner_id && (
             <p className="mt-1 text-sm text-red-500">
