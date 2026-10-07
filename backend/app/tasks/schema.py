@@ -23,10 +23,6 @@ class TaskSchema(Schema):
 
     owner_id = fields.UUID(required=True)
 
-    assigned_to_id = fields.UUID(
-        allow_none=True,
-    )
-
     title = fields.String(
         required=True,
         validate=validate.Length(
@@ -47,9 +43,9 @@ class TaskSchema(Schema):
         allow_none=True,
     )
 
-    status = fields.String()
+    status = fields.Method("serialize_status")
 
-    priority = fields.String()
+    priority = fields.Method("serialize_priority")
 
     completed = fields.Boolean()
 
@@ -60,6 +56,20 @@ class TaskSchema(Schema):
     updated_at = fields.DateTime(
         dump_only=True,
     )
+
+    def serialize_status(self, obj):
+
+        if obj.status is None:
+            return None
+
+        return obj.status.value
+
+    def serialize_priority(self, obj):
+
+        if obj.priority is None:
+            return None
+
+        return obj.priority.value
 
 
 class CreateTaskSchema(Schema):
@@ -79,10 +89,6 @@ class CreateTaskSchema(Schema):
     )
 
     owner_id = fields.UUID(required=True)
-
-    assigned_to_id = fields.UUID(
-        allow_none=True,
-    )
 
     title = fields.String(
         required=True,
@@ -107,7 +113,7 @@ class CreateTaskSchema(Schema):
 
 class UpdateTaskSchema(Schema):
 
-    assigned_to_id = fields.UUID(
+    deal_id = fields.UUID(
         allow_none=True,
     )
 

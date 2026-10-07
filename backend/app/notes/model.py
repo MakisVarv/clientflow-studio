@@ -70,7 +70,7 @@ class Note(BaseModel):
 
     deal = relationship(
         "Deal",
-        back_populates="notes",
+        back_populates="notes_items",
     )
 
     owner = relationship(

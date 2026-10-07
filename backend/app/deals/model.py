@@ -107,7 +107,7 @@ class Deal(BaseModel):
         cascade="all, delete-orphan",
     )
 
-    notes = relationship(
+    notes_items = relationship(
         "Note",
         back_populates="deal",
         cascade="all, delete-orphan",
