@@ -25,6 +25,10 @@ import CreateContactPage from '../features/contacts/pages/CreateContactPage';
 import EditContactPage from '../features/contacts/pages/EditContactPage';
 import CreateLeadPage from '../features/leads/pages/CreateLeadPage';
 import EditLeadPage from '../features/leads/pages/EditLeadPage';
+import CreateDealPage from '../features/deals/pages/CreateDealPage';
+import EditDealPage from '../features/deals/pages/EditDealPage';
+import CreateTaskPage from '../features/tasks/pages/CReateTaskPage';
+import EditTaskPage from '../features/tasks/pages/EditTaskPage';
 
 function AppRouter() {
   return (
@@ -59,7 +63,17 @@ function AppRouter() {
               element={<EditLeadPage />}
             />
             <Route path="/deals" element={<DealsPage />} />
+            <Route path="/deals/new" element={<CreateDealPage />} />
+            <Route
+              path="/deals/:id/edit"
+              element={<EditDealPage />}
+            />
             <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/tasks/new" element={<CreateTaskPage />} />
+            <Route
+              path="/tasks/:id/edit"
+              element={<EditTaskPage />}
+            />
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/notes" element={<NotesPage />} />
