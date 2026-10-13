@@ -27,8 +27,12 @@ import CreateLeadPage from '../features/leads/pages/CreateLeadPage';
 import EditLeadPage from '../features/leads/pages/EditLeadPage';
 import CreateDealPage from '../features/deals/pages/CreateDealPage';
 import EditDealPage from '../features/deals/pages/EditDealPage';
-import CreateTaskPage from '../features/tasks/pages/CReateTaskPage';
 import EditTaskPage from '../features/tasks/pages/EditTaskPage';
+import CreateTaskPage from '../features/tasks/pages/CreateTaskPage';
+import CreateActivityPage from '../features/activities/pages/CreateActivityPage';
+import EditActivityPage from '../features/activities/pages/EditActivityPage';
+import CreateCalendarEventPage from '../features/calendar/pages/CreateCalendarEventPage';
+import EditCalendarEventPage from '../features/calendar/pages/EditCalendarEventPage';
 
 function AppRouter() {
   return (
@@ -75,7 +79,23 @@ function AppRouter() {
               element={<EditTaskPage />}
             />
             <Route path="/activities" element={<ActivitiesPage />} />
+            <Route
+              path="/activities/new"
+              element={<CreateActivityPage />}
+            />
+            <Route
+              path="/activities/:id/edit"
+              element={<EditActivityPage />}
+            />
             <Route path="/calendar" element={<CalendarPage />} />
+            <Route
+              path="/calendar/new"
+              element={<CreateCalendarEventPage />}
+            />
+            <Route
+              path="/calendar/:id/edit"
+              element={<EditCalendarEventPage />}
+            />
             <Route path="/notes" element={<NotesPage />} />
             <Route
               path="/attachments"
