@@ -1,10 +1,9 @@
 import os
 import uuid
 
-from werkzeug.utils import secure_filename
-
 from app.attachments.model import Attachment
 from app.attachments.repository import AttachmentRepository
+from werkzeug.utils import secure_filename
 
 
 class AttachmentService:
@@ -52,7 +51,7 @@ class AttachmentService:
 
     def delete_attachment(self, attachment_id):
 
-        attachment = self.get_by_id(attachment_id)
+        attachment = self.repository.get_by_id(attachment_id)
 
         if os.path.exists(attachment.file_path):
 

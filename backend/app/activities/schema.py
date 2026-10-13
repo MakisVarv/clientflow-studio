@@ -1,7 +1,5 @@
 # type: ignore
-from marshmallow import Schema
-from marshmallow import fields
-from marshmallow import validate
+from marshmallow import Schema, fields, validate
 
 
 class ActivitySchema(Schema):
@@ -18,7 +16,7 @@ class ActivitySchema(Schema):
 
     owner_id = fields.UUID(required=True)
 
-    type = fields.Str(required=True)
+    type = fields.Method("serialize_type")
 
     subject = fields.Str(
         required=True,
@@ -38,6 +36,13 @@ class ActivitySchema(Schema):
     updated_at = fields.DateTime(
         dump_only=True,
     )
+
+    def serialize_type(self, obj):
+
+        if obj.type is None:
+            return None
+
+        return obj.type.value
 
 
 class CreateActivitySchema(Schema):
