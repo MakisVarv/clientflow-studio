@@ -17,21 +17,27 @@ class NotificationSchema(Schema):
         ),
     )
 
-    message = fields.Str(
-        required=True,
-    )
+    message = fields.Str(required=True)
 
-    type = fields.Str()
+    type = fields.Method("serialize_type")
 
     is_read = fields.Bool()
 
-    created_at = fields.DateTime(
-        dump_only=True,
-    )
+    created_at = fields.DateTime(dump_only=True)
 
-    updated_at = fields.DateTime(
-        dump_only=True,
-    )
+    updated_at = fields.DateTime(dump_only=True)
+
+    def serialize_type(self, obj):
+
+        if obj.type is None:
+            return None
+
+        return obj.type.value
+
+
+notification_schema = NotificationSchema()
+
+notifications_schema = NotificationSchema(many=True)
 
 
 class CreateNotificationSchema(Schema):

@@ -1,125 +1,163 @@
-from app.notifications.model import Notification
-from app.notifications.model import NotificationType
-from app.notifications.repository import NotificationRepository
+from app.extensions import socketio
+
+from app.notifications.model import (
+    Notification,
+    NotificationType,
+)
+
+from app.notifications.schema import (
+    notification_schema,
+)
 
 
 class NotificationService:
 
-    def __init__(self, repository: NotificationRepository):
+    def __init__(
+        self,
+        repository,
+    ):
 
         self.repository = repository
 
-    def get_all(self):
+    def get_notifications(
+        self,
+        user_id,
+    ):
 
-        return self.repository.get_all()
+        return self.repository.get_by_user(user_id)
 
-    def get_by_id(self, notification_id):
+    def get_unread_notifications(
+        self,
+        user_id,
+    ):
 
-        notification = self.repository.get_by_id(notification_id)
+        return self.repository.get_unread_by_user(user_id)
 
-        if notification is None:
-            raise ValueError("Notification not found.")
-
-        return notification
-
-    def create_notification(self, data):
-
-        notification = Notification(**data)
-
-        return self.repository.add(notification)
-
-    def delete_notification(self, notification_id):
-
-        notification = self.get_by_id(notification_id)
-
-        self.repository.delete(notification)
-
-    def get_user_notifications(self, user_id):
-
-        return self.repository.get_user_notifications(user_id)
-
-    def get_unread_notifications(self, user_id):
-
-        return self.repository.get_unread_notifications(user_id)
-
-    def get_read_notifications(self, user_id):
-
-        return self.repository.get_read_notifications(user_id)
-
-    def get_unread_count(self, user_id):
+    def get_unread_count(
+        self,
+        user_id,
+    ) -> int:
 
         return self.repository.get_unread_count(user_id)
 
-    def mark_as_read(self, notification_id):
-
-        notification = self.get_by_id(notification_id)
-
-        return self.repository.mark_as_read(notification)
-
-    def mark_all_as_read(self, user_id):
-
-        return self.repository.mark_all_as_read(user_id)
-
-    def notify_info(
+    def create_notification(
         self,
         user_id,
         title,
         message,
+        notification_type=NotificationType.INFO,
     ):
+
+        if isinstance(
+            notification_type,
+            str,
+        ):
+            notification_type = NotificationType(notification_type)
 
         notification = Notification(
             user_id=user_id,
             title=title,
             message=message,
-            type=NotificationType.INFO,
+            type=notification_type,
+            is_read=False,
         )
 
-        return self.repository.add(notification)
+        notification = self.repository.add(notification)
 
-    def notify_success(
+        data = notification_schema.dump(notification)
+
+        socketio.emit(
+            "notification:new",
+            data,
+            to=f"user:{user_id}",
+        )
+
+        return notification
+
+    def mark_as_read(
         self,
+        notification_id,
         user_id,
-        title,
-        message,
     ):
 
-        notification = Notification(
-            user_id=user_id,
-            title=title,
-            message=message,
-            type=NotificationType.SUCCESS,
+        notification = self.repository.mark_as_read(
+            notification_id,
+            user_id,
         )
 
-        return self.repository.add(notification)
+        if notification is None:
+            return None
 
-    def notify_warning(
+        socketio.emit(
+            "notification:read",
+            {
+                "id": str(notification.id),
+            },
+            to=f"user:{user_id}",
+        )
+
+        return notification
+
+    def mark_as_unread(
         self,
+        notification_id,
         user_id,
-        title,
-        message,
     ):
 
-        notification = Notification(
-            user_id=user_id,
-            title=title,
-            message=message,
-            type=NotificationType.WARNING,
+        notification = self.repository.mark_as_unread(
+            notification_id,
+            user_id,
         )
 
-        return self.repository.add(notification)
+        if notification is None:
+            return None
 
-    def notify_error(
+        socketio.emit(
+            "notification:unread",
+            {
+                "id": str(notification.id),
+            },
+            to=f"user:{user_id}",
+        )
+
+        return notification
+
+    def mark_all_as_read(
         self,
         user_id,
-        title,
-        message,
-    ):
+    ) -> int:
 
-        notification = Notification(
-            user_id=user_id,
-            title=title,
-            message=message,
-            type=NotificationType.ERROR,
+        updated_count = self.repository.mark_all_as_read(user_id)
+
+        socketio.emit(
+            "notification:all_read",
+            {
+                "updated_count": updated_count,
+            },
+            to=f"user:{user_id}",
         )
 
-        return self.repository.add(notification)
+        return updated_count
+
+    def delete_notification(
+        self,
+        notification_id,
+        user_id,
+    ) -> bool:
+
+        deleted = self.repository.delete_for_user(
+            notification_id,
+            user_id,
+        )
+
+        if deleted:
+
+            socketio.emit(
+                "notification:deleted",
+                {
+                    "id": str(notification_id),
+                },
+                to=f"user:{user_id}",
+            )
+
+        return deleted

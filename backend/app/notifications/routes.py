@@ -1,22 +1,27 @@
-from flask import Blueprint
-from flask import jsonify
-from flask import request
+from flask import (
+    Blueprint,
+    jsonify,
+)
 
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import (
+    jwt_required,
+    get_jwt_identity,
+)
 
-from app.common.permissions import require_permission
-from app.database.session import get_db
+from app.database.session import db_context
 
-from app.notifications.repository import NotificationRepository
-from app.notifications.service import NotificationService
+from app.notifications.repository import (
+    NotificationRepository,
+)
+
+from app.notifications.service import (
+    NotificationService,
+)
 
 from app.notifications.schema import (
     notification_schema,
     notifications_schema,
-    create_notification_schema,
 )
-from app.database.session import db_context
 
 notification_bp = Blueprint(
     "notifications",
@@ -27,124 +32,159 @@ notification_bp = Blueprint(
 
 @notification_bp.get("")
 @jwt_required()
-@require_permission("notification.read")
 def get_notifications():
-
-    with db_context() as db:
-
-        service = NotificationService(NotificationRepository(db))
-
-        notifications = service.get_all()
-
-        return jsonify(notifications_schema.dump(notifications))
-
-
-@notification_bp.get("/me")
-@jwt_required()
-@require_permission("notification.read")
-def get_my_notifications():
 
     user_id = get_jwt_identity()
 
     with db_context() as db:
 
-        service = NotificationService(NotificationRepository(db))
+        repository = NotificationRepository(db)
 
-        notifications = service.get_user_notifications(user_id)
+        service = NotificationService(repository)
+
+        notifications = service.get_notifications(user_id)
 
         return jsonify(notifications_schema.dump(notifications))
 
 
 @notification_bp.get("/unread")
 @jwt_required()
-@require_permission("notification.read")
 def get_unread_notifications():
 
     user_id = get_jwt_identity()
 
     with db_context() as db:
 
-        service = NotificationService(NotificationRepository(db))
+        repository = NotificationRepository(db)
+
+        service = NotificationService(repository)
 
         notifications = service.get_unread_notifications(user_id)
 
         return jsonify(notifications_schema.dump(notifications))
 
 
-@notification_bp.get("/unread/count")
+@notification_bp.get("/unread-count")
 @jwt_required()
-@require_permission("notification.read")
-def unread_count():
+def get_unread_count():
 
     user_id = get_jwt_identity()
 
     with db_context() as db:
 
-        service = NotificationService(NotificationRepository(db))
+        repository = NotificationRepository(db)
+
+        service = NotificationService(repository)
 
         count = service.get_unread_count(user_id)
 
         return jsonify({"count": count})
 
 
-@notification_bp.post("")
+@notification_bp.put("/<uuid:notification_id>/read")
 @jwt_required()
-@require_permission("notification.create")
-def create_notification():
-
-    data = create_notification_schema.load(request.get_json())
-
-    with db_context() as db:
-
-        service = NotificationService(NotificationRepository(db))
-
-        notification = service.create_notification(data)
-
-        return (
-            jsonify(notification_schema.dump(notification)),
-            201,
-        )
-
-
-@notification_bp.patch("/<uuid:notification_id>/read")
-@jwt_required()
-@require_permission("notification.update")
-def mark_as_read(notification_id):
-
-    with db_context() as db:
-
-        service = NotificationService(NotificationRepository(db))
-
-        notification = service.mark_as_read(notification_id)
-
-        return jsonify(notification_schema.dump(notification))
-
-
-@notification_bp.patch("/read-all")
-@jwt_required()
-@require_permission("notification.update")
-def mark_all_as_read():
+def mark_notification_as_read(
+    notification_id,
+):
 
     user_id = get_jwt_identity()
 
     with db_context() as db:
 
-        service = NotificationService(NotificationRepository(db))
+        repository = NotificationRepository(db)
 
-        notifications = service.mark_all_as_read(user_id)
+        service = NotificationService(repository)
 
-        return jsonify(notifications_schema.dump(notifications))
+        notification = service.mark_as_read(
+            notification_id,
+            user_id,
+        )
+
+        if notification is None:
+
+            return (
+                jsonify({"message": "Notification not found."}),
+                404,
+            )
+
+        return jsonify(notification_schema.dump(notification))
+
+
+@notification_bp.put("/<uuid:notification_id>/unread")
+@jwt_required()
+def mark_notification_as_unread(
+    notification_id,
+):
+
+    user_id = get_jwt_identity()
+
+    with db_context() as db:
+
+        repository = NotificationRepository(db)
+
+        service = NotificationService(repository)
+
+        notification = service.mark_as_unread(
+            notification_id,
+            user_id,
+        )
+
+        if notification is None:
+
+            return (
+                jsonify({"message": "Notification not found."}),
+                404,
+            )
+
+        return jsonify(notification_schema.dump(notification))
+
+
+@notification_bp.put("/read-all")
+@jwt_required()
+def mark_all_notifications_as_read():
+
+    user_id = get_jwt_identity()
+
+    with db_context() as db:
+
+        repository = NotificationRepository(db)
+
+        service = NotificationService(repository)
+
+        updated_count = service.mark_all_as_read(user_id)
+
+        return jsonify(
+            {
+                "message": "Notifications marked as read.",
+                "updated_count": updated_count,
+            }
+        )
 
 
 @notification_bp.delete("/<uuid:notification_id>")
 @jwt_required()
-@require_permission("notification.delete")
-def delete_notification(notification_id):
+def delete_notification(
+    notification_id,
+):
+
+    user_id = get_jwt_identity()
 
     with db_context() as db:
 
-        service = NotificationService(NotificationRepository(db))
+        repository = NotificationRepository(db)
 
-        service.delete_notification(notification_id)
+        service = NotificationService(repository)
+
+        deleted = service.delete_notification(
+            notification_id,
+            user_id,
+        )
+
+        if not deleted:
+
+            return (
+                jsonify({"message": "Notification not found."}),
+                404,
+            )
 
         return jsonify({"message": "Notification deleted successfully."})
