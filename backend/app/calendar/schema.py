@@ -1,6 +1,4 @@
-from marshmallow import Schema
-from marshmallow import fields
-from marshmallow import validate
+from marshmallow import Schema, fields, validate
 
 
 class CalendarEventSchema(Schema):
@@ -25,9 +23,9 @@ class CalendarEventSchema(Schema):
 
     color = fields.Str()
 
-    type = fields.Str()
+    type = fields.Method("serialize_type")
 
-    status = fields.Str()
+    status = fields.Method("serialize_status")
 
     company_id = fields.UUID(
         allow_none=True,
@@ -54,6 +52,20 @@ class CalendarEventSchema(Schema):
     updated_at = fields.DateTime(
         dump_only=True,
     )
+
+    def serialize_type(self, obj):
+
+        if obj.type is None:
+            return None
+
+        return obj.type.value
+
+    def serialize_status(self, obj):
+
+        if obj.status is None:
+            return None
+
+        return obj.status.value
 
 
 class CreateCalendarEventSchema(Schema):

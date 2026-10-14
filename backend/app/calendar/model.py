@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import Enum as SQLEnum, String
 from sqlalchemy import ForeignKey
 from sqlalchemy import Text
 
@@ -63,6 +63,8 @@ class CalendarEvent(BaseModel):
     end_datetime: Mapped[datetime]
 
     location: Mapped[str | None]
+
+    color: Mapped[str] = mapped_column(String(20), default="#2563EB")
 
     is_all_day: Mapped[bool] = mapped_column(
         default=False,

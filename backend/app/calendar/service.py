@@ -1,8 +1,4 @@
-from datetime import datetime
-
-from app.calendar.model import CalendarEvent
-from app.calendar.model import CalendarEventStatus
-from app.calendar.model import CalendarEventType
+from app.calendar.model import CalendarEvent, CalendarEventStatus, CalendarEventType
 from app.calendar.repository import CalendarRepository
 
 
