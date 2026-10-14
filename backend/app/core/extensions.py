@@ -1,3 +1,4 @@
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -14,6 +15,13 @@ jwt = JWTManager()
 swagger = Swagger()
 ma = Marshmallow()
 
+socketio = SocketIO(
+    cors_allowed_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+)
+
 
 def register_extensions(app):
 
@@ -26,3 +34,5 @@ def register_extensions(app):
     swagger.init_app(app)
 
     CORS(app)
+
+    socketio.init_app(app)

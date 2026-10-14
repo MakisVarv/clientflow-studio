@@ -50,6 +50,7 @@ def create_app() -> Flask:
     app.register_blueprint(attachments_bp)
 
     register_error_handlers(app)
+    from app.notifications import socket_events
 
     config_name = os.getenv("FLASK_ENV", "development")
 
