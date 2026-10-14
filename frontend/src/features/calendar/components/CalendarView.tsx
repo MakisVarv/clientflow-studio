@@ -42,9 +42,9 @@ function CalendarView({ events }: Props) {
 
     allDay: event.is_all_day,
 
-    backgroundColor: event.color,
+    color: event.color,
 
-    borderColor: event.color,
+    contrastColor: '#ffffff',
   }));
 
   return (
