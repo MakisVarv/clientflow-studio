@@ -10,6 +10,7 @@ from flask_jwt_extended import (
 
 from app.database.session import db_context
 
+from app.notifications.model import NotificationType
 from app.notifications.repository import (
     NotificationRepository,
 )
@@ -188,3 +189,25 @@ def delete_notification(
             )
 
         return jsonify({"message": "Notification deleted successfully."})
+
+
+@notification_bp.post("/test")
+@jwt_required()
+def test_notification():
+
+    user_id = get_jwt_identity()
+
+    with db_context() as db:
+
+        repository = NotificationRepository(db)
+
+        service = NotificationService(repository)
+
+        notification = service.create_notification(
+            user_id=user_id,
+            title="Live Notification Test",
+            message="WebSocket notification is working!",
+            notification_type=NotificationType.SUCCESS,
+        )
+
+        return jsonify(notification_schema.dump(notification)), 201

@@ -1,4 +1,4 @@
-from app.extensions import socketio
+from app.core.extensions import socketio
 
 from app.notifications.model import (
     Notification,

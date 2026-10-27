@@ -1,17 +1,19 @@
+from typing import cast
+
 from sqlalchemy import (
     select,
     func,
     update,
 )
+from sqlalchemy.engine import CursorResult
 
-from app.common.repository import BaseRepository
+from app.common.base_repository import BaseRepository
 from app.notifications.model import Notification
 
 
 class NotificationRepository(BaseRepository[Notification]):
 
     def __init__(self, db):
-
         super().__init__(
             db,
             Notification,
@@ -88,7 +90,6 @@ class NotificationRepository(BaseRepository[Notification]):
         notification.is_read = True
 
         self.db.commit()
-
         self.db.refresh(notification)
 
         return notification
@@ -110,7 +111,6 @@ class NotificationRepository(BaseRepository[Notification]):
         notification.is_read = False
 
         self.db.commit()
-
         self.db.refresh(notification)
 
         return notification
@@ -129,7 +129,7 @@ class NotificationRepository(BaseRepository[Notification]):
             .values(is_read=True)
         )
 
-        result = self.db.execute(stmt)
+        result = cast(CursorResult, self.db.execute(stmt))
 
         self.db.commit()
 
@@ -150,7 +150,6 @@ class NotificationRepository(BaseRepository[Notification]):
             return False
 
         self.db.delete(notification)
-
         self.db.commit()
 
         return True
