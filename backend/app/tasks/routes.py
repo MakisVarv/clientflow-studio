@@ -2,6 +2,8 @@
 from app.common.permissions import require_permission
 from app.database.session import db_context
 from app.tasks.repository import TaskRepository
+from app.notifications.repository import NotificationRepository
+from app.notifications.service import NotificationService
 from app.tasks.schema import (
     create_task_schema,
     task_schema,
@@ -77,7 +79,16 @@ def create_task():
 
     with db_context() as db:
 
-        service = TaskService(TaskRepository(db))
+        task_repository = TaskRepository(db)
+
+        notification_repository = NotificationRepository(db)
+
+        notification_service = NotificationService(notification_repository)
+
+        service = TaskService(
+            task_repository,
+            notification_service,
+        )
 
         task = service.create_task(data)
 
@@ -96,7 +107,16 @@ def update_task(task_id):
 
     with db_context() as db:
 
-        service = TaskService(TaskRepository(db))
+        task_repository = TaskRepository(db)
+
+        notification_repository = NotificationRepository(db)
+
+        notification_service = NotificationService(notification_repository)
+
+        service = TaskService(
+            task_repository,
+            notification_service,
+        )
 
         task = service.update_task(
             task_id,

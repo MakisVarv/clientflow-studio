@@ -1,3 +1,5 @@
+import NotificationBell from '../../features/notifications/components/notificationBell';
+
 function Header() {
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
@@ -13,6 +15,8 @@ function Header() {
           placeholder="Search..."
           className="w-64 px-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
         />
+
+        <NotificationBell />
 
         <div className="text-right">
           <p className="font-medium text-slate-800">System Admin</p>

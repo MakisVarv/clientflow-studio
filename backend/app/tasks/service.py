@@ -1,13 +1,18 @@
 # type: ignore
+from app.notifications.model import NotificationType
 from app.tasks.model import Task
 from app.tasks.repository import TaskRepository
 
 
 class TaskService:
 
-    def __init__(self, repository: TaskRepository):
-
+    def __init__(
+        self,
+        repository,
+        notification_service=None,
+    ):
         self.repository = repository
+        self.notification_service = notification_service
 
     def get_all(self):
 
@@ -26,7 +31,18 @@ class TaskService:
 
         task = Task(**data)
 
-        return self.repository.create(task)
+        task = self.repository.create(task)
+
+        if self.notification_service:
+
+            self.notification_service.create_notification(
+                user_id=task.owner_id,
+                title="New Task Assigned",
+                message=f'You have been assigned the task "{task.title}".',
+                notification_type=NotificationType.INFO,
+            )
+
+        return task
 
     def update_task(
         self,
