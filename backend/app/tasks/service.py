@@ -1,7 +1,7 @@
 # type: ignore
 from app.notifications.model import NotificationType
-from app.tasks.model import Task
-from app.tasks.repository import TaskRepository
+from app.notifications.service import NotificationService
+from app.tasks.model import Task, TaskStatus
 
 
 class TaskService:
@@ -9,7 +9,7 @@ class TaskService:
     def __init__(
         self,
         repository,
-        notification_service=None,
+        notification_service=NotificationService,
     ):
         self.repository = repository
         self.notification_service = notification_service
@@ -50,13 +50,38 @@ class TaskService:
         data,
     ):
 
-        task = self.get_by_id(task_id)
+        task = self.repository.get_by_id(task_id)
+
+        if task is None:
+            return None
+
+        was_completed = task.completed
 
         for key, value in data.items():
+            setattr(
+                task,
+                key,
+                value,
+            )
 
-            setattr(task, key, value)
+        if task.status == TaskStatus.COMPLETED:
+            task.completed = True
 
-        return self.repository.update(task)
+        elif task.status != TaskStatus.COMPLETED:
+            task.completed = False
+
+        task = self.repository.update(task)
+
+        if self.notification_service and not was_completed and task.completed:
+
+            self.notification_service.create_notification(
+                user_id=task.owner_id,
+                title="Task Completed",
+                message=f'Task "{task.title}" has been completed.',
+                notification_type=NotificationType.SUCCESS,
+            )
+
+        return task
 
     def delete_task(self, task_id):
 

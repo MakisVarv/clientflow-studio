@@ -1,18 +1,20 @@
 # type: ignore
 from uuid import UUID
 
-
-from app.deals.model import Deal
-from app.deals.repository import DealRepository
+from app.deals.model import Deal, DealStage
+from app.notifications.model import NotificationType
+from app.notifications.service import NotificationService
 
 
 class DealService:
 
     def __init__(
         self,
-        repository: DealRepository,
+        repository,
+        notification_service=NotificationService,
     ):
         self.repository = repository
+        self.notification_service = notification_service
 
     def get_all(self):
 
@@ -48,28 +50,76 @@ class DealService:
 
     def create_deal(
         self,
-        **data,
+        data,
     ):
 
         deal = Deal(**data)
 
-        return self.repository.create(deal)
+        deal = self.repository.create(deal)
+
+        if self.notification_service:
+
+            self.notification_service.create_notification(
+                user_id=deal.owner_id,
+                title="New Deal Assigned",
+                message=f'You are now responsible for deal "{deal.title}".',
+                notification_type=NotificationType.INFO,
+            )
+
+        return deal
 
     def update_deal(
         self,
-        deal_id: UUID,
-        **data,
+        deal_id,
+        data,
     ):
 
         deal = self.repository.get_by_id(deal_id)
 
-        if not deal:
-            raise ValueError("Deal not found.")
+        if deal is None:
+            return None
+
+        old_stage = deal.stage
 
         for key, value in data.items():
-            setattr(deal, key, value)
+            setattr(
+                deal,
+                key,
+                value,
+            )
 
-        return self.repository.update(deal)
+        deal = self.repository.update(deal)
+
+        if self.notification_service and old_stage != deal.stage:
+
+            if deal.stage == DealStage.WON:
+
+                self.notification_service.create_notification(
+                    user_id=deal.owner_id,
+                    title="Deal Won",
+                    message=f'Deal "{deal.title}" has been won.',
+                    notification_type=NotificationType.SUCCESS,
+                )
+
+            elif deal.stage == DealStage.LOST:
+
+                self.notification_service.create_notification(
+                    user_id=deal.owner_id,
+                    title="Deal Lost",
+                    message=f'Deal "{deal.title}" has been marked as lost.',
+                    notification_type=NotificationType.ERROR,
+                )
+
+            elif deal.stage == DealStage.CONTRACT:
+
+                self.notification_service.create_notification(
+                    user_id=deal.owner_id,
+                    title="Deal Contract Stage",
+                    message=f'Deal "{deal.title}" moved to contract stage.',
+                    notification_type=NotificationType.WARNING,
+                )
+
+        return deal
 
     def delete(
         self,

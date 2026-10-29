@@ -9,6 +9,8 @@ from app.deals.schema import (
     update_deal_schema,
 )
 from app.deals.service import DealService
+from app.notifications.repository import NotificationRepository
+from app.notifications.service import NotificationService
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
@@ -79,16 +81,25 @@ def create_deal():
 
     with db_context() as db:
 
-        service = DealService(DealRepository(db))
+        deal_repository = DealRepository(db)
 
-        deal = service.create_deal(
-            data,
-        )
+    notification_repository = NotificationRepository(db)
 
-        return (
-            jsonify(deal_schema.dump(deal)),
-            201,
-        )
+    notification_service = NotificationService(notification_repository)
+
+    service = DealService(
+        deal_repository,
+        notification_service,
+    )
+
+    deal = service.create_deal(
+        data,
+    )
+
+    return (
+        jsonify(deal_schema.dump(deal)),
+        201,
+    )
 
 
 @deal_bp.put("/<uuid:deal_id>")
@@ -100,14 +111,23 @@ def update_deal(deal_id):
 
     with db_context() as db:
 
-        service = DealService(DealRepository(db))
+        deal_repository = DealRepository(db)
 
-        deal = service.update_deal(
-            deal_id,
-            data,
-        )
+    notification_repository = NotificationRepository(db)
 
-        return jsonify(deal_schema.dump(deal))
+    notification_service = NotificationService(notification_repository)
+
+    service = DealService(
+        deal_repository,
+        notification_service,
+    )
+
+    deal = service.update_deal(
+        deal_id,
+        data,
+    )
+
+    return jsonify(deal_schema.dump(deal))
 
 
 @deal_bp.delete("/<uuid:deal_id>")
