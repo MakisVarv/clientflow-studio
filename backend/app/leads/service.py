@@ -1,18 +1,16 @@
 # type: ignore
 from uuid import UUID
 
-
-from app.leads.model import Lead
-from app.leads.repository import LeadRepository
+from app.leads.model import Lead, LeadStatus
+from app.notifications.model import NotificationType
+from app.notifications.service import NotificationService
 
 
 class LeadService:
 
-    def __init__(
-        self,
-        repository: LeadRepository,
-    ):
+    def __init__(self, repository, notification_service=NotificationService):
         self.repository = repository
+        self.notification_service = notification_service
 
     def get_all(self):
 
@@ -39,30 +37,73 @@ class LeadService:
 
         return self.repository.get_user_leads(user_id)
 
-    def create_lead(
-        self,
-        **data,
-    ):
+    def create_lead(self, data):
 
         lead = Lead(**data)
 
-        return self.repository.create(lead)
+        lead = self.repository.add(lead)
+
+        self.notification_service.create_notification(
+            user_id=lead.owner_id,
+            title="New Lead Assigned",
+            message=f'You are now responsible for lead "{lead.title}".',
+            notification_type=NotificationType.INFO,
+        )
+
+        return lead
 
     def update_lead(
         self,
-        lead_id: UUID,
-        **data,
+        lead_id,
+        data,
     ):
 
         lead = self.repository.get_by_id(lead_id)
 
-        if not lead:
-            raise ValueError("Lead not found.")
+        if lead is None:
+            return None
+
+        old_status = lead.status
 
         for key, value in data.items():
-            setattr(lead, key, value)
+            setattr(
+                lead,
+                key,
+                value,
+            )
 
-        return self.repository.update(lead)
+        lead = self.repository.update(lead)
+
+        if old_status != lead.status:
+
+            if lead.status == LeadStatus.QUALIFIED:
+
+                self.notification_service.create_notification(
+                    user_id=lead.owner_id,
+                    title="Lead Qualified",
+                    message=f'Lead "{lead.title}" has been qualified.',
+                    notification_type=NotificationType.SUCCESS,
+                )
+
+            elif lead.status == LeadStatus.WON:
+
+                self.notification_service.create_notification(
+                    user_id=lead.owner_id,
+                    title="Lead Won",
+                    message=f'Lead "{lead.title}" has been won.',
+                    notification_type=NotificationType.SUCCESS,
+                )
+
+            elif lead.status == LeadStatus.LOST:
+
+                self.notification_service.create_notification(
+                    user_id=lead.owner_id,
+                    title="Lead Lost",
+                    message=f'Lead "{lead.title}" has been marked as lost.',
+                    notification_type=NotificationType.ERROR,
+                )
+
+        return lead
 
     def delete(
         self,

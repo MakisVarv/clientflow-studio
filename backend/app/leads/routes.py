@@ -1,21 +1,18 @@
 # type: ignore
-from flask import Blueprint, jsonify, request
-
-from flask_jwt_extended import jwt_required
-
 from app.common.permissions import require_permission
-from app.database.session import get_db
-
+from app.database.session import db_context
 from app.leads.repository import LeadRepository
-from app.leads.service import LeadService
-
 from app.leads.schema import (
+    create_lead_schema,
     lead_schema,
     leads_schema,
-    create_lead_schema,
     update_lead_schema,
 )
-from app.database.session import db_context
+from app.leads.service import LeadService
+from app.notifications.repository import NotificationRepository
+from app.notifications.service import NotificationService
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 
 lead_bp = Blueprint(
     "leads",
@@ -100,9 +97,18 @@ def create_lead():
 
     with db_context() as db:
 
-        service = LeadService(LeadRepository(db))
+        lead_repository = LeadRepository(db)
 
-        lead = service.create_lead(**data)
+        notification_repository = NotificationRepository(db)
+
+        notification_service = NotificationService(repository=notification_repository)
+
+        service = LeadService(
+            repository=lead_repository,
+            notification_service=notification_service,
+        )
+
+        lead = service.create_lead(data)
 
         return (
             jsonify(lead_schema.dump(lead)),
@@ -113,17 +119,28 @@ def create_lead():
 @lead_bp.put("/<uuid:lead_id>")
 @jwt_required()
 @require_permission("lead.update")
-def update_lead(lead_id):
+def update_lead(
+    lead_id,
+):
 
     data = update_lead_schema.load(request.get_json())
 
     with db_context() as db:
 
-        service = LeadService(LeadRepository(db))
+        lead_repository = LeadRepository(db)
+
+        notification_repository = NotificationRepository(db)
+
+        notification_service = NotificationService(repository=notification_repository)
+
+        service = LeadService(
+            repository=lead_repository,
+            notification_service=notification_service,
+        )
 
         lead = service.update_lead(
             lead_id,
-            **data,
+            data,
         )
 
         return jsonify(lead_schema.dump(lead))
@@ -136,7 +153,16 @@ def delete_lead(lead_id):
 
     with db_context() as db:
 
-        service = LeadService(LeadRepository(db))
+        lead_repository = LeadRepository(db)
+
+        notification_repository = NotificationRepository(db)
+
+        notification_service = NotificationService(repository=notification_repository)
+
+        service = LeadService(
+            repository=lead_repository,
+            notification_service=notification_service,
+        )
 
         service.delete(lead_id)
 

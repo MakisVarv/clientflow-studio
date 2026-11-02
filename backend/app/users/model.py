@@ -1,8 +1,7 @@
 import uuid
-from sqlalchemy import Boolean, String
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+
+from sqlalchemy import Boolean, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.baseModel import BaseModel
 
@@ -78,13 +77,14 @@ class User(BaseModel):
     )
     tasks = relationship(
         "Task",
+        foreign_keys="Task.owner_id",
         back_populates="owner",
         cascade="all, delete-orphan",
     )
-    owned_tasks = relationship(
+    assigned_tasks = relationship(
         "Task",
-        foreign_keys="Task.owner_id",
-        back_populates="owner",
+        foreign_keys="Task.assigned_to_id",
+        back_populates="assignee",
     )
     notifications = relationship(
         "Notification",

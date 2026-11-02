@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from app.database.baseModel import BaseModel
 from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import ForeignKey, Text
+from sqlalchemy import ForeignKey, Text, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
@@ -45,4 +45,10 @@ class Notification(BaseModel):
     user = relationship(
         "User",
         back_populates="notifications",
+    )
+    dedup_key: Mapped[str | None] = mapped_column(
+        String(255),
+        unique=True,
+        index=True,
+        nullable=True,
     )

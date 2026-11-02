@@ -83,23 +83,23 @@ def create_deal():
 
         deal_repository = DealRepository(db)
 
-    notification_repository = NotificationRepository(db)
+        notification_repository = NotificationRepository(db)
 
-    notification_service = NotificationService(notification_repository)
+        notification_service = NotificationService(repository=notification_repository)
 
-    service = DealService(
-        deal_repository,
-        notification_service,
-    )
+        service = DealService(
+            deal_repository,
+            notification_service,
+        )
 
-    deal = service.create_deal(
-        data,
-    )
+        deal = service.create_deal(
+            data,
+        )
 
-    return (
-        jsonify(deal_schema.dump(deal)),
-        201,
-    )
+        return (
+            jsonify(deal_schema.dump(deal)),
+            201,
+        )
 
 
 @deal_bp.put("/<uuid:deal_id>")
@@ -113,19 +113,19 @@ def update_deal(deal_id):
 
         deal_repository = DealRepository(db)
 
-    notification_repository = NotificationRepository(db)
+        notification_repository = NotificationRepository(db)
 
-    notification_service = NotificationService(notification_repository)
+        notification_service = NotificationService(repository=notification_repository)
 
-    service = DealService(
-        deal_repository,
-        notification_service,
-    )
+        service = DealService(
+            deal_repository,
+            notification_service,
+        )
 
-    deal = service.update_deal(
-        deal_id,
-        data,
-    )
+        deal = service.update_deal(
+            deal_id,
+            data,
+        )
 
     return jsonify(deal_schema.dump(deal))
 
