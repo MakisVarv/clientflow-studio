@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 import uuid
 
 from sqlalchemy import Boolean, ForeignKey, String

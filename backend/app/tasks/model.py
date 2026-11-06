@@ -66,6 +66,7 @@ class Task(BaseModel):
     )
 
     owner_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+
     assigned_to_id: Mapped[str] = mapped_column(
         ForeignKey("users.id"),
         nullable=True,
@@ -114,10 +115,12 @@ class Task(BaseModel):
     owner = relationship(
         "User",
         back_populates="tasks",
+        foreign_keys=[owner_id],
     )
     assignee = relationship(
         "User",
         back_populates="assigned_tasks",
+        foreign_keys=[assigned_to_id],
     )
 
     completed_at: Mapped[date | None]

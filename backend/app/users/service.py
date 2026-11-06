@@ -1,10 +1,9 @@
 # type: ignore
 import bcrypt
-from app.users.model import User
+
 from app.common.base_service import BaseService
-from app.users.repository import UserRepository
-from app.roles.repository import RoleRepository
 from app.common.exceptions.bad_request import BadRequestException
+from app.users.model import User
 
 
 class UserService(BaseService):
@@ -150,6 +149,7 @@ class UserService(BaseService):
         for permission in user.role.permissions:
 
             if permission.name == permission_name:
+
                 return True
 
         return False
