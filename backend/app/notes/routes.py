@@ -1,22 +1,15 @@
-from flask import Blueprint
-from flask import jsonify
-from flask import request
-
-from flask_jwt_extended import jwt_required
-
 from app.common.permissions import require_permission
-from app.database.session import get_db
-
-from app.notes.repository import NoteRepository
-from app.notes.service import NoteService
 from app.database.session import db_context
-
+from app.notes.repository import NoteRepository
 from app.notes.schema import (
+    create_note_schema,
     note_schema,
     notes_schema,
-    create_note_schema,
     update_note_schema,
 )
+from app.notes.service import NoteService
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 
 notes_bp = Blueprint(
     "notes",
@@ -27,7 +20,7 @@ notes_bp = Blueprint(
 
 @notes_bp.get("")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def get_notes():
 
     with db_context() as db:
@@ -41,7 +34,7 @@ def get_notes():
 
 @notes_bp.get("/<uuid:note_id>")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def get_note(note_id):
 
     with db_context() as db:
@@ -55,7 +48,7 @@ def get_note(note_id):
 
 @notes_bp.post("")
 @jwt_required()
-@require_permission("notes.create")
+@require_permission("note.create")
 def create_note():
 
     data = create_note_schema.load(request.get_json())
@@ -74,7 +67,7 @@ def create_note():
 
 @notes_bp.put("/<uuid:note_id>")
 @jwt_required()
-@require_permission("notes.update")
+@require_permission("note.update")
 def update_note(note_id):
 
     data = update_note_schema.load(request.get_json())
@@ -93,7 +86,7 @@ def update_note(note_id):
 
 @notes_bp.delete("/<uuid:note_id>")
 @jwt_required()
-@require_permission("notes.delete")
+@require_permission("note.delete")
 def delete_note(note_id):
 
     with db_context() as db:
@@ -107,7 +100,7 @@ def delete_note(note_id):
 
 @notes_bp.get("/company/<uuid:company_id>")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def company_notes(company_id):
 
     with db_context() as db:
@@ -121,7 +114,7 @@ def company_notes(company_id):
 
 @notes_bp.get("/contact/<uuid:contact_id>")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def contact_notes(contact_id):
 
     with db_context() as db:
@@ -135,7 +128,7 @@ def contact_notes(contact_id):
 
 @notes_bp.get("/lead/<uuid:lead_id>")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def lead_notes(lead_id):
 
     with db_context() as db:
@@ -149,7 +142,7 @@ def lead_notes(lead_id):
 
 @notes_bp.get("/search")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def search_notes():
 
     search = request.args.get("q", "")
@@ -165,7 +158,7 @@ def search_notes():
 
 @notes_bp.get("/recent")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def recent_notes():
 
     limit = request.args.get(
@@ -183,9 +176,9 @@ def recent_notes():
         return jsonify(notes_schema.dump(notes))
 
 
-@notes_bp.patch("/<uuid:note_id>/pin")
+@notes_bp.put("/<uuid:note_id>/pin")
 @jwt_required()
-@require_permission("notes.update")
+@require_permission("note.update")
 def pin_note(note_id):
 
     with db_context() as db:
@@ -197,9 +190,9 @@ def pin_note(note_id):
         return jsonify(note_schema.dump(note))
 
 
-@notes_bp.patch("/<uuid:note_id>/unpin")
+@notes_bp.put("/<uuid:note_id>/unpin")
 @jwt_required()
-@require_permission("notes.update")
+@require_permission("note.update")
 def unpin_note(note_id):
 
     with db_context() as db:
@@ -213,7 +206,7 @@ def unpin_note(note_id):
 
 @notes_bp.get("/owner/<uuid:owner_id>")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def owner_notes(owner_id):
 
     with db_context() as db:
@@ -227,7 +220,7 @@ def owner_notes(owner_id):
 
 @notes_bp.get("/pinned")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def pinned_notes():
 
     with db_context() as db:
@@ -241,7 +234,7 @@ def pinned_notes():
 
 @notes_bp.get("/entity")
 @jwt_required()
-@require_permission("notes.read")
+@require_permission("note.read")
 def entity_notes():
 
     entity_type = request.args.get("type")

@@ -11,7 +11,6 @@ import TasksPage from '../features/tasks/pages/TasksPage';
 import ActivitiesPage from '../features/activities/pages/ActivitiesPage';
 import CalendarPage from '../features/calendar/pages/CalendarPage';
 import NotesPage from '../features/notes/pages/NotesPage';
-import AttachmentsPage from '../features/attachments/pages/Attachments';
 import ReportsPage from '../features/reports/pages/ReportsPage';
 import SearchPage from '../features/search/pages/SearchPage';
 import PipelinePage from '../features/pipelines/pages/PipelinePage';
@@ -33,6 +32,9 @@ import CreateActivityPage from '../features/activities/pages/CreateActivityPage'
 import EditActivityPage from '../features/activities/pages/EditActivityPage';
 import CreateCalendarEventPage from '../features/calendar/pages/CreateCalendarEventPage';
 import EditCalendarEventPage from '../features/calendar/pages/EditCalendarEventPage';
+import CreateNotePage from '../features/notes/pages/CreateNotePage';
+import EditNotePage from '../features/notes/pages/EditNotePage';
+import AttachmentPage from '../features/attachments/pages/AttachmentPage';
 
 function AppRouter() {
   return (
@@ -97,10 +99,12 @@ function AppRouter() {
               element={<EditCalendarEventPage />}
             />
             <Route path="/notes" element={<NotesPage />} />
+            <Route path="/notes/new" element={<CreateNotePage />} />
             <Route
-              path="/attachments"
-              element={<AttachmentsPage />}
+              path="/notes/:id/edit"
+              element={<EditNotePage />}
             />
+            <Route path="/attachments" element={<AttachmentPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/pipeline" element={<PipelinePage />} />
