@@ -1,24 +1,14 @@
-from flask import Blueprint
-from flask import jsonify
-from flask import request
-from flask import send_file
-
-from flask_jwt_extended import jwt_required
-
-from app.common.permissions import require_permission
-from app.database.session import get_db
-
 from app.attachments.repository import AttachmentRepository
-from app.attachments.service import AttachmentService
-
-from app.database.session import db_context
-
 from app.attachments.schema import (
     attachment_schema,
     attachments_schema,
     create_attachment_schema,
-    update_attachment_schema,
 )
+from app.attachments.service import AttachmentService
+from app.common.permissions import require_permission
+from app.database.session import db_context
+from flask import Blueprint, jsonify, request, send_file
+from flask_jwt_extended import jwt_required
 
 attachments_bp = Blueprint(
     "attachments",
