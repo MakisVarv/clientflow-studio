@@ -1,10 +1,6 @@
 from sqlalchemy import select
 
 from app.permissions.permission_model import Permission
-from app.database.session import SessionFactory
-import app.roles.model
-import app.permissions.permission_model
-import app.users.model
 
 DEFAULT_PERMISSIONS = [
     "users.view",
@@ -56,6 +52,10 @@ DEFAULT_PERMISSIONS = [
     "note.create",
     "note.update",
     "note.delete",
+    "attachments.read",
+    "attachments.create",
+    "attachments.update",
+    "attachments.delete",
 ]
 
 

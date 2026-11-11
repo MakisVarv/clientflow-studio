@@ -1,3 +1,5 @@
+import os
+
 from app.attachments.repository import AttachmentRepository
 from app.attachments.schema import (
     attachment_schema,
@@ -75,20 +77,35 @@ def upload_attachment():
 
 @attachments_bp.get("/<uuid:attachment_id>/download")
 @jwt_required()
-@require_permission("attachments.read")
 def download_attachment(attachment_id):
 
     with db_context() as db:
 
-        service = AttachmentService(AttachmentRepository(db))
+        repository = AttachmentRepository(db)
 
-        attachment = service.get_by_id(attachment_id)
+        attachment = repository.get_by_id(attachment_id)
+
+        if attachment is None:
+            return jsonify({"message": "Attachment not found."}), 404
+
+        file_path = os.path.abspath(attachment.file_path)
+
+        if not os.path.exists(file_path):
+            return (
+                jsonify(
+                    {
+                        "message": "File not found on server.",
+                        "path": file_path,
+                    }
+                ),
+                404,
+            )
 
         return send_file(
-            attachment.file_path,
+            file_path,
+            mimetype=attachment.mime_type,
             as_attachment=True,
             download_name=attachment.original_name,
-            mimetype=attachment.mime_type,
         )
 
 
@@ -167,19 +184,35 @@ def search_attachments():
         return jsonify(attachments_schema.dump(attachments))
 
 
-@attachments_bp.get("/preview/<uuid:attachment_id>")
+@attachments_bp.get("/<uuid:attachment_id>/preview")
 @jwt_required()
-@require_permission("attachments.read")
 def preview_attachment(attachment_id):
 
     with db_context() as db:
 
-        service = AttachmentService(AttachmentRepository(db))
+        repository = AttachmentRepository(db)
 
-        attachment = service.preview_attachment(attachment_id)
+        attachment = repository.get_by_id(attachment_id)
+
+        if attachment is None:
+            return jsonify({"message": "Attachment not found."}), 404
+
+        file_path = os.path.abspath(attachment.file_path)
+
+        if not os.path.exists(file_path):
+            return (
+                jsonify(
+                    {
+                        "message": "File not found on server.",
+                        "path": file_path,
+                    }
+                ),
+                404,
+            )
 
         return send_file(
-            attachment.file_path,
+            file_path,
             mimetype=attachment.mime_type,
             as_attachment=False,
+            download_name=attachment.original_name,
         )

@@ -121,13 +121,20 @@ async function searchAttachments(
 
   return response.data;
 }
+async function previewAttachment(id: string): Promise<Blob> {
+  const response = await api.get(`/attachments/${id}/preview`, {
+    responseType: 'blob',
+  });
 
-function getDownloadUrl(id: string) {
-  return `${import.meta.env.VITE_API_URL}/attachments/download/${id}`;
+  return response.data;
 }
 
-function getPreviewUrl(id: string) {
-  return `${import.meta.env.VITE_API_URL}/attachments/preview/${id}`;
+async function downloadAttachment(id: string): Promise<Blob> {
+  const response = await api.get(`/attachments/${id}/download`, {
+    responseType: 'blob',
+  });
+
+  return response.data;
 }
 
 const attachmentService = {
@@ -149,9 +156,9 @@ const attachmentService = {
 
   searchAttachments,
 
-  getDownloadUrl,
+  previewAttachment,
 
-  getPreviewUrl,
+  downloadAttachment,
 };
 
 export default attachmentService;

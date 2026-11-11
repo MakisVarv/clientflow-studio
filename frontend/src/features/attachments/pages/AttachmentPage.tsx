@@ -83,16 +83,44 @@ export default function AttachmentsPage() {
     });
   }
 
-  function handlePreview(id: string) {
-    const url = attachmentService.getPreviewUrl(id);
+  async function handlePreview(id: string) {
+    try {
+      const blob = await attachmentService.previewAttachment(id);
 
-    window.open(url, '_blank');
+      const url = URL.createObjectURL(blob);
+
+      window.open(url, '_blank');
+
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 60000);
+    } catch {
+      toast.error('Could not preview attachment');
+    }
   }
 
-  function handleDownload(id: string) {
-    const url = attachmentService.getDownloadUrl(id);
+  async function handleDownload(id: string, fileName: string) {
+    try {
+      const blob = await attachmentService.downloadAttachment(id);
 
-    window.open(url, '_blank');
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+
+      link.href = url;
+
+      link.download = fileName;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error('Could not download attachment');
+    }
   }
 
   return (
@@ -410,7 +438,12 @@ export default function AttachmentsPage() {
                       <button
                         type="button"
                         title="Download"
-                        onClick={() => handleDownload(attachment.id)}
+                        onClick={() =>
+                          handleDownload(
+                            attachment.id,
+                            attachment.original_name,
+                          )
+                        }
                         className="
                             rounded-lg
                             p-2
