@@ -52,14 +52,20 @@ class ReportsService:
 
     def lead_funnel_report(self):
 
-        return {"lead_funnel": self.repository.leads_by_status()}
+        return {
+            "statuses": self.repository.leads_by_status(),
+            "total_leads": self.repository.total_leads(),
+        }
 
     def task_report(self):
 
+        completed = self.repository.completed_tasks()
+        pending = self.repository.pending_tasks()
         return {
             "tasks": {
-                "completed": self.repository.completed_tasks(),
-                "pending": self.repository.pending_tasks(),
+                "total_tasks": completed + pending,
+                "completed_tasks": completed,
+                "pending_tasks": pending,
             }
         }
 
